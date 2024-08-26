@@ -1,0 +1,35 @@
+{
+  "name": "movies",
+  "version": "1.0.0",
+  "description": "",
+  "author": "H. Abdulaziz",
+  "main": "index.js",
+  "scripts": {
+    "up": "db-migrate up --env pg",
+    "down": "db-migrate down --env pg",
+    "start": "db-migrate up && ts-node src/app.ts",
+    "watch": "nodemon -e ts --exec ts-node src/app.ts"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cors": "2.8.5",
+    "date-fns": "^3.6.0",
+    "db-migrate-pg": "^1.2.2",
+    "dotenv": "8.2.0",
+    "express": "4.17.1",
+    "express-joi-validation": "5.0.0",
+    "http-status-codes": "^2.3.0",
+    "joi": "17.4.0",
+    "morgan": "1.10.0",
+    "pg": "^8.12.0",
+    "swagger-ui-express": "4.6.3",
+    "ts-node": "8.4.1",
+    "tslib": "1.10.0",
+    "typescript": "3.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "10.17.4",
+    "nodemon": "^1.11.0",
+    "ts-node-dev": "1.0.0-pre.42"
+  }
+}
