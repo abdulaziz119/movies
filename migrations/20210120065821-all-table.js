@@ -11,9 +11,12 @@ exports.up = function (db, callback) {
         CREATE TABLE IF NOT EXISTS public.roles
         (
             id SERIAL PRIMARY KEY UNIQUE,
+            role JSONB,
             movies JSONB,
-            users JSONB,
-            admin JSONB
+            admin JSONB,
+            statistics JSONB,
+            advertising JSONB,
+            series JSONB
         );
 
         -- Create admin table
@@ -22,7 +25,6 @@ exports.up = function (db, callback) {
             id SERIAL PRIMARY KEY UNIQUE,
             first_name VARCHAR(255),
             last_name VARCHAR(255),
-            language VARCHAR(255),
             role_id INTEGER UNIQUE REFERENCES public.roles(id),
             boss_admin BOOLEAN,
             email VARCHAR(255) UNIQUE,
@@ -35,6 +37,7 @@ exports.up = function (db, callback) {
             id SERIAL PRIMARY KEY UNIQUE,
             code INTEGER,
             name JSONB,
+            url JSONB,
             language JSONB,
             quality VARCHAR(255),
             duration VARCHAR(255),
@@ -63,6 +66,25 @@ exports.up = function (db, callback) {
             month INTEGER,
             type VARCHAR(255)
         );
+
+        -- Create advertising table
+        CREATE TABLE IF NOT EXISTS public.advertising
+        (
+            id SERIAL PRIMARY KEY UNIQUE,
+            upload_id INTEGER,
+            seen INTEGER,
+            finish INTEGER,
+            create_admin_id INTEGER REFERENCES public.admin(id)
+        );
+
+        -- Create series table
+        CREATE TABLE IF NOT EXISTS public.series
+        (
+            id SERIAL PRIMARY KEY UNIQUE,
+            name JSONB,
+            movies_id INTEGER[] REFERENCES public.movies(id),
+            create_admin_id INTEGER REFERENCES public.admin(id)
+        );
     `, function (err) {
         if (err) return callback(err);
         callback();
@@ -72,6 +94,8 @@ exports.up = function (db, callback) {
 exports.down = function (db, callback) {
     db.runSql(`
         -- Drop tables in reverse order of creation to handle dependencies
+        DROP TABLE IF EXISTS public.series;
+        DROP TABLE IF EXISTS public.advertising;
         DROP TABLE IF EXISTS public.uploads;
         DROP TABLE IF EXISTS public.movies;
         DROP TABLE IF EXISTS public.admin;

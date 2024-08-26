@@ -8,6 +8,9 @@ import {DashboardStatisticRoutes} from "./dashboard/statistic.routes"
 import {FrontendMoviesRoutes} from "./frontend/frontend-movies.routes";
 import {FrontendStatisticRoutes} from "./frontend/frontend-statistic.routes";
 import {FrontendUploadRoutes} from "./frontend/frontend-upload.routes";
+import {DashboardAdvertisingRoutes} from "./dashboard/advertising.routes";
+import {FrontendSeriesRoutes} from "./frontend/frontend-series.routes";
+import {DashboardSeriesRoutes} from "./dashboard/series.routes";
 
 function nestedRoutes(this: any, path, configure) {
     const router = express.Router({mergeParams: true});
@@ -41,9 +44,19 @@ export const routes = (app: express.Application) => {
             DashboardUploadRoutes(data)
         });
 
+        app['prefix']('/dashboard/advertising', data => {
+            DashboardAdvertisingRoutes(data)
+        });
+
         app['prefix']('/dashboard/statistic', data => {
             DashboardStatisticRoutes(data)
         });
+
+        app['prefix']('/dashboard/series', data => {
+            DashboardSeriesRoutes(data)
+        });
+
+
 
         app['prefix']('/frontend/movies', data => {
             FrontendMoviesRoutes(data)
@@ -56,6 +69,11 @@ export const routes = (app: express.Application) => {
         app['prefix']('/frontend/upload', data => {
             FrontendUploadRoutes(data)
         });
+
+        app['prefix']('/frontend/series', data => {
+            FrontendSeriesRoutes(data)
+        });
+
     })
 
     app.use(expressRouter);
