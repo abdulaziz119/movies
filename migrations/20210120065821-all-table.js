@@ -22,6 +22,7 @@ exports.up = function (db, callback) {
             id SERIAL PRIMARY KEY UNIQUE,
             first_name VARCHAR(255),
             last_name VARCHAR(255),
+            language VARCHAR(255),
             role_id INTEGER UNIQUE REFERENCES public.roles(id),
             boss_admin BOOLEAN,
             email VARCHAR(255) UNIQUE,
@@ -52,14 +53,14 @@ exports.up = function (db, callback) {
             movie_id INTEGER REFERENCES public.movies(id)
         );
 
-        -- Create users table
-        CREATE TABLE IF NOT EXISTS public.users
+        -- Create statistics table (renamed from users)
+        CREATE TABLE IF NOT EXISTS public.statistics
         (
             id SERIAL PRIMARY KEY UNIQUE,
             watched INTEGER,
             exits INTEGER,
             not_exited INTEGER,
-            month VARCHAR(255),
+            month INTEGER,
             type VARCHAR(255)
         );
     `, function (err) {
@@ -75,7 +76,7 @@ exports.down = function (db, callback) {
         DROP TABLE IF EXISTS public.movies;
         DROP TABLE IF EXISTS public.admin;
         DROP TABLE IF EXISTS public.roles;
-        DROP TABLE IF EXISTS public.users;
+        DROP TABLE IF EXISTS public.statistics;
     `, function (err) {
         if (err) return callback(err);
         callback();

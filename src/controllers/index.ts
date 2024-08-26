@@ -1,6 +1,2 @@
-
-export * from './ssenariy.controller';
-export * from './notificaition-ssenariy.controller';
-export * from './users.controller';
-export * from './story-ssenariy.controller';
-export * from './prize.controller'
+export * from './dashboard/index';
+export * from './frontend/index';

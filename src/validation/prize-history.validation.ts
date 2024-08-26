@@ -1,7 +1,7 @@
 import * as Joi from "joi";
 
 
-// export interface PrizeHistoryModel extends BaseModel {
+// export interface MoviesModel extends BaseModel {
 //     prize_id: number,
 //     user_id: number,
 //     story_ssenariy_id: number,
