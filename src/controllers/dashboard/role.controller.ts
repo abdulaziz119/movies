@@ -1,6 +1,17 @@
-import {DashboardAdminController} from "./admin.controller";
+import { RolesModel, ValidatedRequest, ValidatedRequestBody} from "../../models";
+import { RolesRepository} from "../../repository";
+import {ErrorService, ResponseHelper} from "../../utils";
 
 export class DashboardRoleController {
+    static async create(req: ValidatedRequest<ValidatedRequestBody<RolesModel>>, res: Response) {
+        try {
+            const result = await RolesRepository.create(req.body)
+
+            return ResponseHelper.success(res, result)
+        } catch (error) {
+            return ErrorService.error(res, error)
+        }
+    }
     // static async getAll(req: ValidatedRequest<ValidatedRequestQuery<PaginationParams>>, res: Response) {
     //     try {
     //         const result: LevelModel[] = await LevelRepository.getAll(req.query)
