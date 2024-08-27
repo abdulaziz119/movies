@@ -1,5 +1,5 @@
-import {AdminModel, pgPoolQuery, QueryParams} from '..';
-import bcrypt from 'bcrypt'; // Ensure bcrypt is installed and imported
+import {AdminModel, pgPoolQuery} from '..';
+import {params_joi} from "../validation/other.validation";
 
 
 export class AdminsRepository {
@@ -11,7 +11,6 @@ export class AdminsRepository {
             RETURNING *;
         `;
 
-        // Set default value for boss_admin if not provided
         const bossAdmin = params.boss_admin !== undefined ? params.boss_admin : false;
 
         const values = [
@@ -25,9 +24,8 @@ export class AdminsRepository {
 
         const result = await pgPoolQuery(sql, values);
 
-        // Check if the result has rows
         if (!result.rows || result.rows.length === 0)
-            return null as any;
+            throw new Error('Could not create administrator');
 
         return result.rows[0];
     }
@@ -42,22 +40,53 @@ export class AdminsRepository {
         const result = await pgPoolQuery(sql, [params.email]);
 
         if (!result.rows || result.rows.length === 0) {
-            return null;
+            throw new Error('No admins found');
         }
 
-        const admin = result.rows[0];
-
-        const isPasswordValid = await  this.comparePasswords(params.password, admin.password);
-
-        if (!isPasswordValid) {
-            return null;
-        }
-
-        return admin;
+        return result.rows[0];
     }
 
-     static  comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
-        return bcrypt.compare(password, hashedPassword);
+
+    static async getOne(params: { id: number }): Promise<AdminModel | null> {
+        const sql = `
+            SELECT * FROM public.admin
+            WHERE id = $1;
+        `;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.id]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No admins found');
+            }
+
+            return result.rows[0];
+        } catch (error) {
+            console.error(`Error fetching admin by ID: ${error}`);
+            throw new Error('Error fetching admin by ID');
+        }
+    }
+
+    static async getAll(params: { limit: number, page: number }): Promise<AdminModel[] > {
+        const sql = `
+            SELECT * FROM public.admin
+            LIMIT $1 OFFSET $2;
+        `;
+
+        const offset = (params.page - 1) * params.limit;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.limit, offset]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No admins found');
+            }
+
+            return result.rows;
+        } catch (error) {
+            console.error(`Error fetching admins: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error('Error fetching admins');
+        }
     }
 
 }

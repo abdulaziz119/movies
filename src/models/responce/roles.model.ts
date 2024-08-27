@@ -1,6 +1,7 @@
 import {BaseModel} from ".";
 
 export interface RolesModel extends BaseModel {
+    admin_id?: number;
     admin: {
         create: boolean,
         update: boolean,

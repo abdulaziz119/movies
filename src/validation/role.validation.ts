@@ -8,11 +8,10 @@ const permissionsSchema = Joi.object({
 });
 
 const roles_joi = Joi.object({
-    id: Joi.number().integer().required(),  // Assuming `id` is part of BaseModel
+    admin_id: Joi.number().required(),
     admin: permissionsSchema.required(),
     roles: permissionsSchema.required(),
     movies: permissionsSchema.required(),
-    users: permissionsSchema.required(),
     series: permissionsSchema.required(),
     statistics: permissionsSchema.required(),
     advertising: permissionsSchema.required(),

@@ -1,7 +1,5 @@
 import * as express from "express";
 import {createValidator} from "express-joi-validation";
-import {checkToken} from "../../utils/check-token.service";
-import {story_ssenariy_joi, story_ssenariy_update_joi, story_ssenariy_user_id_joi} from "../../validation";
 
 const validator = createValidator({ passError: true });
 
