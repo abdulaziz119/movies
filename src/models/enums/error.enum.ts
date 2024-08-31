@@ -17,5 +17,6 @@ export enum ErrorEnum {
     invalidSsenariyId = 'Неверный ssenariy id',
     templateIdOrContent = 'Content или template_id не должен быть пустым',
     ssenariyNotification = 'Тип сценария должен быть notification',
-    noActiveSsenaries = 'Нет активных сценариев'
+    noActiveSsenaries = 'Нет активных сценариев',
+    EmailUsed = 'Этот email уже используется!'
 }

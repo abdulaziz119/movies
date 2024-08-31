@@ -17,7 +17,10 @@ exports.up = function (db, callback) {
             roles JSONB,
             series JSONB,
             statistics JSONB,
-            uploads JSONB
+            uploads JSONB,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
         );
 
         -- Create admin table
@@ -30,7 +33,10 @@ exports.up = function (db, callback) {
             language VARCHAR(255),
             boss_admin BOOLEAN,
             email VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL
+            password VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
         );
 
         -- Create movies table
@@ -47,7 +53,10 @@ exports.up = function (db, callback) {
             year VARCHAR(255),
             genre VARCHAR(255),
             create_admin_id INTEGER REFERENCES public.admin(id),
-            seen INTEGER
+            seen INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
         );
 
         -- Create uploads table
@@ -55,7 +64,10 @@ exports.up = function (db, callback) {
         (
             id SERIAL PRIMARY KEY UNIQUE,
             url VARCHAR(255),
-            movie_id INTEGER REFERENCES public.movies(id)
+            movie_id INTEGER REFERENCES public.movies(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
         );
 
         -- Create statistics table (renamed from users)
@@ -66,7 +78,10 @@ exports.up = function (db, callback) {
             exits INTEGER,
             not_exited INTEGER,
             month INTEGER,
-            type VARCHAR(255)
+            type VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
         );
 
         -- Create advertising table
@@ -76,7 +91,10 @@ exports.up = function (db, callback) {
             upload_id INTEGER,
             seen INTEGER,
             finish INTEGER,
-            create_admin_id INTEGER REFERENCES public.admin(id)
+            create_admin_id INTEGER REFERENCES public.admin(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
         );
 
         -- Create series table
@@ -85,7 +103,10 @@ exports.up = function (db, callback) {
             id SERIAL PRIMARY KEY UNIQUE,
             name JSONB,
             movies INTEGER[],   -- Array to store multiple movie IDs
-            create_admin_id INTEGER REFERENCES public.admin(id)
+            create_admin_id INTEGER REFERENCES public.admin(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
         );
     `, function (err) {
         if (err) return callback(err);

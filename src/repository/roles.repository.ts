@@ -1,5 +1,5 @@
 import {pgPoolQuery} from "../database";
-import { RolesModel} from "../models";
+import {AdminModel, RolesModel} from "../models";
 export class RolesRepository {
     static async create(params: RolesModel ): Promise<RolesModel | null> {
         const adminCheckSql = `
@@ -44,37 +44,61 @@ export class RolesRepository {
             throw new Error('Error creating role:');
         }
     }
-    // static async create(params: RolesModel): Promise<RolesModel> {
-    //     const sql = `
-    //         INSERT INTO public.roles (admin, roles, movies, series, statistics, advertising, uploads)
-    //         VALUES ($1, $2, $3, $4, $5, $6, $7)
-    //         RETURNING *;
-    //     `;
-    //     const AdminModelSql = `
-    //         SELECT * FROM public.admin.id = $1;
-    //         WHERE id = $1;
-    //     `;
-    //
-    //     const AdminResult = await pgPoolQuery(sql, [
-    //         params.admin_id,
-    //     ]);
-    //
-    //     const values = [
-    //         params.admin,
-    //         params.roles,
-    //         params.movies,
-    //         params.series,
-    //         params.statistics,
-    //         params.advertising,
-    //         params.uploads
-    //     ];
-    //
-    //     const result = await pgPoolQuery(sql, values);
-    //
-    //     if (!result.rows || result.rows.length === 0)
-    //         return null as any;
-    //
-    //     return result.rows[0];
-    // }
 
+    static async getOne(params:{id: number}): Promise<RolesModel | null> {
+        const sql = `
+            SELECT * FROM public.roles
+            WHERE id = $1
+              AND deleted_at IS NULL;
+        `;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.id]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No roles found');
+            }
+
+            return result.rows[0];
+        } catch (error) {
+            console.error(`Error fetching role by ID: ${error}`);
+            throw new Error('Error fetching role by ID');
+        }
+    }
+
+    static async getAll(params: { limit: number, page: number }): Promise<RolesModel[] > {
+        const sql = `
+            SELECT * FROM public.roles
+            WHERE deleted_at IS NULL
+            LIMIT $1 OFFSET $2;
+        `;
+
+        const offset = (params.page - 1) * params.limit;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.limit, offset]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No admins found');
+            }
+
+            return result.rows;
+        } catch (error) {
+            console.error(`Error fetching roles: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error('Error fetching roles');
+        }
+    }
+
+    static async delete(id: number): Promise<void> {
+        const sql: string = `UPDATE roles
+                             SET deleted_at = NOW()
+                             WHERE id = $1
+                               AND deleted_at IS NULL`;
+        try {
+            await pgPoolQuery(sql, [id]);
+        } catch (error) {
+            console.error('Error deleting roles:', error);
+            throw new Error('Failed to delete roles');
+        }
+    }
 }

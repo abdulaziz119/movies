@@ -2,7 +2,6 @@ const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
 import * as http from 'http'
-import * as swaggerUi from 'swagger-ui-express'
 import { routes} from '.';
 
 class ServerModule {

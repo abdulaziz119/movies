@@ -1,5 +1,6 @@
-import {AdminModel, pgPoolQuery} from '..';
+import {AdminModel, ErrorEnum, pgPoolQuery} from '..';
 import {params_joi} from "../validation/other.validation";
+import {ValidationException} from "../exceptions/validation.exception";
 
 
 export class AdminsRepository {
@@ -23,9 +24,9 @@ export class AdminsRepository {
         ];
 
         const result = await pgPoolQuery(sql, values);
-
-        if (!result.rows || result.rows.length === 0)
-            throw new Error('Could not create administrator');
+        if (!result.rows || result.rows.length === 0){
+            throw new ValidationException(ErrorEnum.EmailUsed)
+        }
 
         return result.rows[0];
     }
@@ -50,7 +51,8 @@ export class AdminsRepository {
     static async getOne(params: { id: number }): Promise<AdminModel | null> {
         const sql = `
             SELECT * FROM public.admin
-            WHERE id = $1;
+            WHERE id = $1
+              AND deleted_at IS NULL;
         `;
 
         try {
@@ -70,6 +72,7 @@ export class AdminsRepository {
     static async getAll(params: { limit: number, page: number }): Promise<AdminModel[] > {
         const sql = `
             SELECT * FROM public.admin
+            WHERE deleted_at IS NULL
             LIMIT $1 OFFSET $2;
         `;
 
@@ -86,6 +89,37 @@ export class AdminsRepository {
         } catch (error) {
             console.error(`Error fetching admins: ${error instanceof Error ? error.message : 'Unknown error'}`);
             throw new Error('Error fetching admins');
+        }
+    }
+
+    static async checkGetOne(id: number): Promise<any> {
+        const sql = `
+            SELECT * FROM public.admin
+            WHERE id = $1;
+        `;
+
+        try {
+            const result = await pgPoolQuery(sql, [id]);
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No admins found');
+            }
+            return result.rows[0].role_id;
+        } catch (error) {
+            console.error(`Error fetching admin by ID: ${error}`);
+            throw new Error('Error fetching admin by ID');
+        }
+    }
+
+    static async delete(id: number): Promise<void> {
+        const sql: string = `UPDATE admin
+                             SET deleted_at = NOW()
+                             WHERE id = $1
+                               AND deleted_at IS NULL`;
+        try {
+            await pgPoolQuery(sql, [id]);
+        } catch (error) {
+            console.error('Error deleting level:', error);
+            throw new Error('Failed to delete level');
         }
     }
 

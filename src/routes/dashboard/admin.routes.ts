@@ -11,5 +11,6 @@ export const DashboardAdminRoutes = (app: express.Application) => {
     app.post('/login', checkToken, validator.body(admin_login_joi), DashboardAdminController.login);
     app.post('/register', checkToken,validator.body(admin_joi) , DashboardAdminController.create);
     app.get('/:id', checkToken,validator.params(Joi.object({id: Joi.number().required()})) , DashboardAdminController.getOne);
-    app.get('/', checkToken,validator.params(params_joi) , DashboardAdminController.getAll);
+    app.get('/', checkToken,validator.query(params_joi) , DashboardAdminController.getAll);
+    app.delete('/:id', checkToken,validator.params(Joi.object({id: Joi.number().required()})) , DashboardAdminController.delete);
 };
