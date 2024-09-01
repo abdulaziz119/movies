@@ -1,12 +1,34 @@
 
-import { pgPoolQuery, QueryParams, StatisticsModel } from '..';
+import {pgPoolQuery, QueryParams, SeriesModule, StatisticsModel} from '..';
 
 export class StatisticsRepository {
+
+    static async checkSeriesCreate(params: {type: string}): Promise<StatisticsModel> {
+        const sql = `
+            INSERT INTO series (month, type)
+            VALUES ($1, $2)
+            RETURNING *;
+        `;
+        const month = new Date().getMonth() + 1;
+
+        const values = [
+            month,
+            params.type,
+        ];
+
+        try {
+            const result = await pgPoolQuery(sql, values);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error inserting statistics:', error);
+            throw new Error('Failed to create statistics');
+        }
+    }
 
     // static async getAll(params: QueryParams): Promise<StatisticsModel[]> {
     //
     //     const parameters: any = [];
-    //     let pagination = '';
+    //     let pagination = '';series
     //     let filter = '';
     //
     //     if (params.limit && !isNaN(params.page)) {

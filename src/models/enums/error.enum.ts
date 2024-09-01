@@ -18,5 +18,6 @@ export enum ErrorEnum {
     templateIdOrContent = 'Content или template_id не должен быть пустым',
     ssenariyNotification = 'Тип сценария должен быть notification',
     noActiveSsenaries = 'Нет активных сценариев',
-    EmailUsed = 'Этот email уже используется!'
+    EmailUsed = 'Этот email уже используется!',
+    movieNameUsed = 'Это название уже используется!'
 }

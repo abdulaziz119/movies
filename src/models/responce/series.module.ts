@@ -6,6 +6,6 @@ export interface SeriesModule extends BaseModel {
         ru: string,
         en: string
     },
-    movies_id: number[],
+    movies: number[],
     create_admin_id:number
 }

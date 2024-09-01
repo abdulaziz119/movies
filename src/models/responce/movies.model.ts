@@ -7,7 +7,7 @@ export interface MoviesModel extends BaseModel {
         ru: string,
         en: string
     },
-    language: {
+    url: {
         uz: string,
         ru: string,
         en: string
@@ -18,5 +18,5 @@ export interface MoviesModel extends BaseModel {
     year: string,
     genre: string,
     create_admin_id: number,
-    seen: number,
+    seen?: number,
 }
