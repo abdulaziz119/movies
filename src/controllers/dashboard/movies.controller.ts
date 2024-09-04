@@ -1,4 +1,4 @@
-import {AdminsRepository, MoviesRepository} from "../../repository";
+import { MoviesRepository} from "../../repository";
 import {
     MoviesModel,
     ValidatedRequest,
@@ -6,7 +6,7 @@ import {
     ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
-import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
+import {ErrorService, getPaginationResponse, MovieService, ResponseHelper} from "../../utils";
 import {StatusCodes} from "http-status-codes";
 
 export class DashboardMoviesController {
@@ -22,7 +22,7 @@ export class DashboardMoviesController {
 
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
-            const result = await MoviesRepository.getOne(req.params,req.headers['accept-language'] ?? 'uz')
+            const result = await MovieService.getOne(req.params,req.headers['accept-language'] ?? 'uz')
             return ResponseHelper.success(res, result)
         } catch (error) {
             return ErrorService.error(res, error)

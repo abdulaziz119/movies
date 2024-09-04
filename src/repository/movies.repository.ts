@@ -57,8 +57,7 @@ export class MoviesRepository {
             if (!result.rows || result.rows.length === 0) {
                 return null;
             }
-
-            return result.rows[0] as MoviesModel;
+            return result.rows[0];
         } catch (error) {
             console.error(`Error fetching movie by ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
             throw new Error('Error fetching movie by ID');
@@ -94,7 +93,6 @@ export class MoviesRepository {
         `;
 
         const offset: number = (params.page - 1) * params.limit;
-        await StatisticsRepository.checkSeriesCreate({type: 'movie'});
 
         try {
             const result = await pgPoolQuery(sql, [params.limit, offset, lang]);

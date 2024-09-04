@@ -76,7 +76,7 @@ exports.up = function (db, callback) {
             watched INTEGER DEFAULT 0,
             exits INTEGER DEFAULT 0,
             not_exited INTEGER DEFAULT 0,
-            month INTEGER DEFAULT 0,
+            month VARCHAR(255),
             type VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

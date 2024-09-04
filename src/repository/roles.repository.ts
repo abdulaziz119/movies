@@ -1,5 +1,5 @@
 import {pgPoolQuery} from "../database";
-import {AdminModel, RolesModel} from "../models";
+import { RolesModel} from "../models";
 export class RolesRepository {
     static async create(params: RolesModel ): Promise<RolesModel | null> {
         const adminCheckSql = `
