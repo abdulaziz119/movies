@@ -1,6 +1,5 @@
 import Joi from 'joi';
 
-// Define the schema for permissions
 const permissionsSchema = Joi.object({
     create: Joi.boolean().required(),
     getOne: Joi.boolean().required(),
