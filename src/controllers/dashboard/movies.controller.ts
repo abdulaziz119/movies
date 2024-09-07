@@ -1,5 +1,6 @@
 import { MoviesRepository} from "../../repository";
 import {
+    ErrorEnum,
     MoviesModel,
     ValidatedRequest,
     ValidatedRequestBody,
@@ -7,12 +8,13 @@ import {
     ValidatedRequestQuery
 } from "../../models";
 import {ErrorService, getPaginationResponse, MovieService, ResponseHelper} from "../../utils";
-import {StatusCodes} from "http-status-codes";
+import {NOT_FOUND, StatusCodes} from "http-status-codes";
 
 export class DashboardMoviesController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<MoviesModel>>, res: Response) {
         try {
             const result: MoviesModel = await MoviesRepository.create(req.body)
+            if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateMovies)
 
             return ResponseHelper.success(res, result)
         } catch (error) {

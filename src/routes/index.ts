@@ -3,7 +3,6 @@ import {errorHandler} from "..";
 import {DashboardAdminRoutes} from "./dashboard/admin.routes";
 import {DashboardRoleRoutes} from "./dashboard/role.routes";
 import {DashboardMoviesRoutes} from "./dashboard/movies.routes";
-import {DashboardUploadRoutes} from "./dashboard/upload.routes";
 import {DashboardStatisticRoutes} from "./dashboard/statistic.routes"
 import {FrontendMoviesRoutes} from "./frontend/frontend-movies.routes";
 import {FrontendStatisticRoutes} from "./frontend/frontend-statistic.routes";
@@ -38,10 +37,6 @@ export const routes = (app: express.Application) => {
 
         app['prefix']('/dashboard/movies', data => {
             DashboardMoviesRoutes(data)
-        });
-
-        app['prefix']('/dashboard/upload', data => {
-            DashboardUploadRoutes(data)
         });
 
         app['prefix']('/dashboard/advertising', data => {

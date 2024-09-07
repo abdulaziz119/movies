@@ -1,5 +1,4 @@
 import {
-    RolesModel,
     StatisticsModel,
     ValidatedRequest,
     ValidatedRequestParams,

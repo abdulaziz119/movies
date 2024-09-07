@@ -20,7 +20,7 @@ export const checkHeader = (req: ValidatedRequest<any>, res, next) => {
     try {
 
         if (!req.headers.language)
-            req.headers.language = 'ru';
+            req.headers.language = `ru`;
         req.query.language = req.headers.language;
         req.body.language = req.headers.language;
 

@@ -13,7 +13,7 @@ export class MovieService {
             await StatisticsRepository.checkSeriesCreate({type: 'weep'});
             return result
         }catch (error) {
-            throw new ValidationException(ErrorEnum.UserNotFound)
+            throw new ValidationException(ErrorEnum.FailedToCreateStatistics)
         }
     }
 }

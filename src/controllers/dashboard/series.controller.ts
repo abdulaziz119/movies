@@ -1,4 +1,5 @@
 import {
+    ErrorEnum,
     SeriesModule,
     ValidatedRequest,
     ValidatedRequestBody,
@@ -7,12 +8,13 @@ import {
 } from "../../models";
 import { SeriesRepository} from "../../repository";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
-import {StatusCodes} from "http-status-codes";
+import {NOT_FOUND, StatusCodes} from "http-status-codes";
 
 export class DashboardSeriesController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<SeriesModule>>, res: Response) {
         try {
             const result: SeriesModule = await SeriesRepository.create(req.body)
+            if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateSeries)
 
             return ResponseHelper.success(res, result)
         } catch (error) {

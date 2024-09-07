@@ -1,5 +1,5 @@
 import {
-    AdvertisingModule,
+    AdvertisingModule, ErrorEnum,
     MoviesModel,
     ValidatedRequest,
     ValidatedRequestBody, ValidatedRequestParams,
@@ -7,13 +7,15 @@ import {
 } from "../../models";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 import {AdvertisingRepository, MoviesRepository, RolesRepository} from "../../repository";
-import {StatusCodes} from "http-status-codes";
+import {NOT_FOUND, StatusCodes} from "http-status-codes";
 
 export class DashboardAdvertisingController {
 
     static async create(req: ValidatedRequest<ValidatedRequestBody<AdvertisingModule>>, res: Response) {
         try {
             const result = await AdvertisingRepository.create(req.body)
+
+            if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateAd)
 
             return ResponseHelper.success(res, result)
         } catch (error) {

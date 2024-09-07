@@ -11,8 +11,6 @@ export class AdminsService {
             const authorizationService: AuthorizationService = new AuthorizationService();
             params.password = Md5.hashStr(params.password)
             const user: AdminModel = await AdminsRepository.create(params)
-            if (!user) throw new ValidationException(ErrorEnum.UserNotFound)
-
             const role=AdminsRepository.checkGetOne(user.role_id)
             const token:string = await authorizationService.sign(user,role)
             let data = {
@@ -21,7 +19,7 @@ export class AdminsService {
             }
             return data
         }catch (error) {
-            throw new ValidationException(ErrorEnum.UserNotFound)
+            throw new ValidationException(ErrorEnum.CreateNotAdmin)
         }
     }
 
@@ -40,7 +38,7 @@ export class AdminsService {
             }
             return data
         }catch (error) {
-            throw new ValidationException(ErrorEnum.UserNotFound)
+            throw new ValidationException(ErrorEnum.NotFoundLogin)
         }
     }
 }

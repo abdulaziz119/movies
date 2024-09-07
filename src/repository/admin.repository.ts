@@ -76,7 +76,7 @@ export class AdminsRepository {
             LIMIT $1 OFFSET $2;
         `;
 
-        const offset = (params.page - 1) * params.limit;
+        const offset:number = (params.page - 1) * params.limit;
 
         try {
             const result = await pgPoolQuery(sql, [params.limit, offset]);
@@ -101,12 +101,12 @@ export class AdminsRepository {
         try {
             const result = await pgPoolQuery(sql, [id]);
             if (!result.rows || result.rows.length === 0) {
-                throw new Error('No admins found');
+                if (!result) throw new ValidationException(ErrorEnum.RoleId)
             }
             return result.rows[0].role_id;
         } catch (error) {
-            console.error(`Error fetching admin by ID: ${error}`);
-            throw new Error('Error fetching admin by ID');
+            console.error(`Error fetching role by ID: ${error}`);
+            throw new Error('Error fetching role by ID');
         }
     }
 

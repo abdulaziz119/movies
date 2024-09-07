@@ -24,6 +24,8 @@ export class DashboardAdminController {
         try {
             const  result = await AdminsService.loginService(req.body)
 
+            if (!result) return ErrorService.error(res, {}, StatusCodes.UNAUTHORIZED, ErrorEnum.NotFoundLogin)
+
             return ResponseHelper.success(res, result)
         } catch (error) {
             return ErrorService.error(res, error)

@@ -1,4 +1,5 @@
 import {
+    ErrorEnum,
     RolesModel,
     ValidatedRequest,
     ValidatedRequestBody,
@@ -7,12 +8,14 @@ import {
 } from "../../models";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 import {AdminsRepository, RolesRepository} from "../../repository";
-import {StatusCodes} from "http-status-codes";
+import {NOT_FOUND, StatusCodes} from "http-status-codes";
 
 export class DashboardRoleController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<RolesModel>>, res: Response) {
         try {
             const result = await RolesRepository.create(req.body)
+            if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateRole)
+
 
             return ResponseHelper.success(res, result)
         } catch (error) {
