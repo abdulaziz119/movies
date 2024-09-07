@@ -88,7 +88,7 @@ exports.up = function (db, callback) {
         (
             id SERIAL PRIMARY KEY UNIQUE,
             upload_id INTEGER,
-            seen INTEGER,
+            seen INTEGER DEFAULT 0,
             finish INTEGER,
             create_admin_id INTEGER REFERENCES public.admin(id),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

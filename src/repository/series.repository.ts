@@ -49,37 +49,11 @@ export class SeriesRepository {
 
             const series = resultSeries.rows[0];
 
-            let moviesDetails = [];
-            if (series.movies && series.movies.length > 0) {
-                const sqlMovies = `
-                SELECT
-                    id,
-                    name ->> $2 AS name,
-                    url ->> $2 AS url,
-                    quality,
-                    duration,
-                    state,
-                    year,
-                    genre,
-                    create_admin_id,
-                    seen
-                FROM
-                    movies
-                WHERE
-                    id = ANY($1::int[])
-                    AND deleted_at IS NULL;
-            `;
-
-                const resultMovies = await pgPoolQuery(sqlMovies, [series.movies, lang]);
-
-                moviesDetails = resultMovies.rows;
-            }
-
             const seriesResponse: SeriesModule = {
                 id: series.id,
                 name: series.name,
-                movies: moviesDetails,
                 create_admin_id: series.create_admin_id,
+                movies: series.movies || [],
             };
 
             return seriesResponse;
@@ -88,6 +62,71 @@ export class SeriesRepository {
             throw new Error('Error fetching series by ID');
         }
     }
+
+    // static async getOne(params: { id: number }, language: string): Promise<SeriesModule | null> {
+    //     const lang = language || 'uz';
+    //
+    //     const sqlSeries = `
+    //     SELECT
+    //         id,
+    //         name ->> $2 AS name,
+    //         create_admin_id,
+    //         movies
+    //     FROM
+    //         series
+    //     WHERE
+    //         id = $1
+    //         AND deleted_at IS NULL;
+    // `;
+    //
+    //     try {
+    //         const resultSeries = await pgPoolQuery(sqlSeries, [params.id, lang]);
+    //
+    //         if (!resultSeries.rows || resultSeries.rows.length === 0) {
+    //             return null;
+    //         }
+    //
+    //         const series = resultSeries.rows[0];
+    //
+    //         let moviesDetails = [];
+    //         if (series.movies && series.movies.length > 0) {
+    //             const sqlMovies = `
+    //             SELECT
+    //                 id,
+    //                 name ->> $2 AS name,
+    //                 url ->> $2 AS url,
+    //                 quality,
+    //                 duration,
+    //                 state,
+    //                 year,
+    //                 genre,
+    //                 create_admin_id,
+    //                 seen
+    //             FROM
+    //                 movies
+    //             WHERE
+    //                 id = ANY($1::int[])
+    //                 AND deleted_at IS NULL;
+    //         `;
+    //
+    //             const resultMovies = await pgPoolQuery(sqlMovies, [series.movies, lang]);
+    //
+    //             moviesDetails = resultMovies.rows;
+    //         }
+    //
+    //         const seriesResponse: SeriesModule = {
+    //             id: series.id,
+    //             name: series.name,
+    //             movies: moviesDetails,
+    //             create_admin_id: series.create_admin_id,
+    //         };
+    //
+    //         return seriesResponse;
+    //     } catch (error) {
+    //         console.error(`Error fetching series by ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    //         throw new Error('Error fetching series by ID');
+    //     }
+    // }
 
     static async getAll(params: { limit: number, page: number },language:string): Promise<any[]> {
         if (params.limit <= 0 || params.page <= 0) {
@@ -100,6 +139,7 @@ export class SeriesRepository {
                 id,
                 name ->> $3 AS name,
                 create_admin_id,
+                movies,
                 created_at,
                 updated_at
             FROM public.series
@@ -161,15 +201,17 @@ export class SeriesRepository {
         const sql = `
         UPDATE public.series
         SET name = $1,
-            create_admin_id = $2,
+            movies = $2,
+            create_admin_id = $3,
             updated_at = NOW()
-        WHERE id = $3
+        WHERE id = $4
         RETURNING id, name, movies, create_admin_id, created_at, updated_at, deleted_at;
     `;
 
         try {
             const result = await pgPoolQuery(sql, [
                 params.name,
+                params.movies,
                 params.create_admin_id,
                 params.id
             ]);

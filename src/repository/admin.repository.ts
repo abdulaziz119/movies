@@ -82,13 +82,13 @@ export class AdminsRepository {
             const result = await pgPoolQuery(sql, [params.limit, offset]);
 
             if (!result.rows || result.rows.length === 0) {
-                throw new Error('No admins found');
+                throw new Error('No advertising found');
             }
 
             return result.rows;
         } catch (error) {
-            console.error(`Error fetching admins: ${error instanceof Error ? error.message : 'Unknown error'}`);
-            throw new Error('Error fetching admins');
+            console.error(`Error fetching advertising: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error('Error fetching advertising');
         }
     }
 

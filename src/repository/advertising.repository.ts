@@ -1,69 +1,85 @@
-
-import { pgPoolQuery, QueryParams, StatisticsModel } from '..';
+import {AdvertisingModule, pgPoolQuery, RolesModel} from '..';
 
 export class AdvertisingRepository {
 
-    // static async getAll(params: QueryParams): Promise<StatisticsModel[]> {
-    //
-    //     const parameters: any = [];
-    //     let pagination = '';
-    //     let filter = '';
-    //
-    //     if (params.limit && !isNaN(params.page)) {
-    //         parameters.push(params.limit, (params.page - 1) * params.limit);
-    //         pagination = ` LIMIT $1 OFFSET $2`;
-    //     }
-    //
-    //     if (params.status) {
-    //         parameters.push(params.status);
-    //         filter += ` and u.status = $${parameters.length}`;
-    //     }
-    //
-    //     const sql = `SELECT u.user_id,
-    //                         u.language,
-    //                         u.activate_date,
-    //                         u.status,
-    //                         count(*) over() as count
-    //                 FROM public.users as u
-    //                     WHERE 1=1 ${filter}
-    //                     order by u.user_id desc ${pagination};`
-    //
-    //     const result = await pgPoolQuery(sql, parameters);
-    //
-    //     return result.rows
-    // }
-    //
-    // static async getById(id: number): Promise<StatisticsModel> {
-    //     const sql = `SELECT u.user_id,
-    //                         u.language,
-    //                         u.activate_date,
-    //                         u.status
-    //                 FROM public.users as u
-    //                     WHERE u.user_id = $1`
-    //     const result = await pgPoolQuery(sql, [id]);
-    //
-    //     if (!result.rows || result.rows.length === 0)
-    //         return null as any;
-    //
-    //     return result.rows[0]
-    // }
-    //
-    // static async create(params: StatisticsModel): Promise<StatisticsModel> {
-    //
-    //     const sql = `
-    //             INSERT INTO public.users (user_id, language, activate_date)
-    //             VALUES ($1, $2, $3) RETURNING *;`
-    //     const result = await pgPoolQuery(sql, [params.user_id, params.language, params.activate_date]);
-    //
-    //     if (!result.rows || result.rows.length === 0)
-    //         return null as any;
-    //
-    //     return result.rows[0];
-    // }
-    //
-    // static async updateStatus(id: number, status: number): Promise<void> {
-    //     const sql = `UPDATE public.users SET status = $2 WHERE user_id = $1`;
-    //     await pgPoolQuery(sql, [id, status]);
-    // }
+    static async create(params: AdvertisingModule): Promise<AdvertisingModule> {
+        const sql = `
+        INSERT INTO advertising (upload_id, finish, create_admin_id, deleted_at)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+    `;
+
+        const values = [
+            params.upload_id,
+            params.finish,
+            params.create_admin_id,
+            params.deleted_at
+        ];
+
+        try {
+            const result = await pgPoolQuery(sql, values);
+            return result.rows[0] as AdvertisingModule;
+        } catch (error) {
+            console.error(`Error creating advertising record: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(`Error creating advertising record: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+    }
+
+    static async getAll(params: { limit: number, page: number }): Promise<AdvertisingModule[] > {
+        const sql = `
+            SELECT * FROM public.advertising
+            WHERE deleted_at IS NULL
+            LIMIT $1 OFFSET $2;
+        `;
+
+        const offset = (params.page - 1) * params.limit;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.limit, offset]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No advertising found');
+            }
+
+            return result.rows;
+        } catch (error) {
+            console.error(`Error fetching advertising: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error('Error fetching advertising');
+        }
+    }
+
+    static async getOne(params:{id: number}): Promise<AdvertisingModule | null> {
+        const sql = `
+            SELECT * FROM public.advertising
+            WHERE id = $1
+              AND deleted_at IS NULL;
+        `;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.id]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No roles found');
+            }
+
+            return result.rows[0];
+        } catch (error) {
+            console.error(`Error fetching advertising by ID: ${error}`);
+            throw new Error('Error fetching advertising by ID');
+        }
+    }
+
+    static async delete(id: number): Promise<void> {
+        const sql: string = `UPDATE public.advertising
+                             SET deleted_at = NOW()
+                             WHERE id = $1
+                               AND deleted_at IS NULL`;
+        try {
+            await pgPoolQuery(sql, [id]);
+        } catch (error) {
+            console.error('Error deleting advertising:', error);
+            throw new Error('Failed to delete advertising');
+        }
+    }
 
 }

@@ -1,10 +1,9 @@
 import * as express from "express";
 import {createValidator} from "express-joi-validation";
 import {checkToken} from "../../utils";
-import {roles_joi} from "../../validation";
+import {params_joi, roles_joi} from "../../validation";
 import { DashboardRoleController} from "../../controllers";
 import Joi from "joi";
-import {params_joi} from "../../validation/other.validation";
 
 const validator = createValidator({passError: true});
 

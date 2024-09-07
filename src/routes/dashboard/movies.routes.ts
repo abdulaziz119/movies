@@ -2,8 +2,7 @@ import * as express from "express";
 import {createValidator} from "express-joi-validation";
 import {DashboardAdminController, DashboardMoviesController} from "../../controllers";
 import {checkToken} from "../../utils";
-import {movieSchema, params_query_joi} from "../../validation";
-import {id_joi, params_joi} from "../../validation/other.validation";
+import {id_joi, movieSchema, params_joi, params_query_joi} from "../../validation";
 const validator = createValidator({passError: true});
 
 export const DashboardMoviesRoutes = (app: express.Application) => {
