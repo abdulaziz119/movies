@@ -102,6 +102,10 @@ exports.up = function (db, callback) {
             id SERIAL PRIMARY KEY UNIQUE,
             name JSONB,
             movies INTEGER[],   -- Array to store multiple movie IDs
+            state VARCHAR(255),
+            year VARCHAR(255),
+            genre VARCHAR(255),
+            seen INTEGER DEFAULT 0,
             create_admin_id INTEGER REFERENCES public.admin(id),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

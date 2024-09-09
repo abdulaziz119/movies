@@ -32,7 +32,7 @@ export class DashboardMoviesController {
         }
     }
 
-    static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res:Response) {
+    static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res) {
         try {
             const data:MoviesModel[]  = await MoviesRepository.getAll(req.query,req.headers['accept-language'] ?? 'uz')
 
@@ -46,7 +46,7 @@ export class DashboardMoviesController {
         }
     }
 
-    static async queryGet(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number, query: string}>>, res:Response) {
+    static async queryGet(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number, query: string}>>, res) {
         try {
             if (req.query.limit <= 0 || req.query.page <= 0) {
                 throw new Error('Invalid pagination parameters');

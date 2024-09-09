@@ -9,7 +9,6 @@ import {AdvertisingRepository} from "../../repository";
 import {NOT_FOUND, StatusCodes} from "http-status-codes";
 import {Response } from 'express';
 
-console.log('salom')
 
 export class DashboardAdvertisingController {
 

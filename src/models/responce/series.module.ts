@@ -7,5 +7,9 @@ export interface SeriesModule extends BaseModel {
         en: string
     },
     movies: number[],
+    state: string,
+    year: string,
+    genre: string,
+    seen?: number
     create_admin_id:number
 }

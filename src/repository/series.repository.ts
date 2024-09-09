@@ -4,14 +4,18 @@ import {pgPoolQuery} from "../database";
 export class SeriesRepository {
     static async create(params: SeriesModule): Promise<SeriesModule> {
         const sql = `
-            INSERT INTO series (name, movies, create_admin_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO series (name, movies,state,year,genre,seen,create_admin_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `;
 
         const values = [
             JSON.stringify(params.name),
             params.movies,
+            params.state,
+            params.year,
+            params.genre,
+            params.seen||0,
             params.create_admin_id,
         ];
 
@@ -31,6 +35,11 @@ export class SeriesRepository {
         SELECT
             id,
             name ->> $2 AS name,
+            movies,
+            state,
+            year,
+            genre,
+            seen,
             create_admin_id,
             movies
         FROM
@@ -52,6 +61,10 @@ export class SeriesRepository {
             const seriesResponse: SeriesModule = {
                 id: series.id,
                 name: series.name,
+                state: series.state,
+                year: series.year,
+                genre: series.genre,
+                seen: series.seen,
                 create_admin_id: series.create_admin_id,
                 movies: series.movies || [],
             };
@@ -140,6 +153,7 @@ export class SeriesRepository {
                 name ->> $3 AS name,
                 create_admin_id,
                 movies,
+                seen,
                 created_at,
                 updated_at
             FROM public.series
@@ -202,16 +216,24 @@ export class SeriesRepository {
         UPDATE public.series
         SET name = $1,
             movies = $2,
-            create_admin_id = $3,
+            genre = $3,
+            seen = $4,
+            year = $5,
+            state = $6,
+            create_admin_id = $7,
             updated_at = NOW()
-        WHERE id = $4
-        RETURNING id, name, movies, create_admin_id, created_at, updated_at, deleted_at;
+        WHERE id = $8
+        RETURNING id, name, movies, genre, seen, year, state, create_admin_id, created_at, updated_at, deleted_at;
     `;
 
         try {
             const result = await pgPoolQuery(sql, [
                 params.name,
                 params.movies,
+                params.genre,
+                params.seen,
+                params.year,
+                params.state,
                 params.create_admin_id,
                 params.id
             ]);
@@ -227,5 +249,113 @@ export class SeriesRepository {
         }
     }
 
+
+    static async frontendGetAll(params: { limit: number, page: number },language:string): Promise<any[]> {
+        if (params.limit <= 0 || params.page <= 0) {
+            throw new Error('Invalid pagination parameters');
+        }
+        const lang=language||'uz';
+
+        const sql = `
+            SELECT
+                id,
+                name ->> $3 AS name,
+                create_admin_id,
+                movies,
+                seen,
+                created_at,
+                updated_at
+            FROM public.series
+            WHERE deleted_at IS NULL
+            ORDER BY id ASC
+                LIMIT $1 OFFSET $2;
+        `;
+        const offset: number = (params.page - 1) * params.limit;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.limit, offset, lang]);
+
+            if (!result.rows || result.rows.length === 0) {
+                return [];
+            }
+
+            return result.rows;
+        } catch (error) {
+            console.error(`Error fetching series: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(`Error fetching series: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+    }
+
+    static async FrontendGetOne(params: { id: number }, language: string): Promise<SeriesModule | null> {
+        const lang = language || 'uz';
+
+        const sqlSeries = `
+        SELECT
+            id,
+            name ->> $2 AS name,
+            movies,
+            state,
+            year,
+            genre,
+            seen,
+            create_admin_id,
+            movies
+        FROM
+            series
+        WHERE
+            id = $1
+            AND deleted_at IS NULL;
+    `;
+
+        try {
+            const resultSeries = await pgPoolQuery(sqlSeries, [params.id, lang]);
+
+            if (!resultSeries.rows || resultSeries.rows.length === 0) {
+                return null;
+            }
+
+            const series = resultSeries.rows[0];
+
+            const seriesResponse: SeriesModule = {
+                id: series.id,
+                name: series.name,
+                state: series.state,
+                year: series.year,
+                genre: series.genre,
+                seen: series.seen,
+                create_admin_id: series.create_admin_id,
+                movies: series.movies || [],
+            };
+
+            return seriesResponse;
+        } catch (error) {
+            console.error(`Error fetching series by ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error('Error fetching series by ID');
+        }
+    }
+
+    static async frontendGetAllMovies(params: { limit: number, page: number, movies_id: number[] },language:string): Promise<any[]> {
+        if (params.limit <= 0 || params.page <= 0) {
+            throw new Error('Invalid pagination parameters');
+        }
+        const lang= language||'uz';
+
+        const sql = `
+        `;
+        const offset: number = (params.page - 1) * params.limit;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.limit, offset, lang]);
+
+            if (!result.rows || result.rows.length === 0) {
+                return [];
+            }
+
+            return result.rows;
+        } catch (error) {
+            console.error(`Error fetching series: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(`Error fetching series: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+    }
 
 }

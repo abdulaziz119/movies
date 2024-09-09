@@ -34,29 +34,42 @@ export class StatisticsRepository {
         }
     }
 
+
     static async IncrementWatchedCount(): Promise<StatisticsModel | null> {
-        const sql = `
-            UPDATE statistics
-            SET watched = watched + 1, updated_at = CURRENT_TIMESTAMP
-            WHERE id = (
-                SELECT id FROM statistics
-                ORDER BY created_at DESC
-                LIMIT 1
-            )
-            RETURNING *;
-        `;
+        const now = new Date();
+        const currentMonth = now.toISOString().slice(0, 7);
+
+        const selectSql = `
+        SELECT id
+        FROM statistics
+        WHERE month = $1
+        ORDER BY created_at DESC
+        LIMIT 1;
+    `;
+
+        const updateSql = `
+        UPDATE statistics
+        SET watched = watched + 1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        RETURNING *;
+    `;
 
         try {
-            const result = await pgPoolQuery(sql);
+            const selectResult = await pgPoolQuery(selectSql, [currentMonth]);
 
-            if (result.rows.length === 0) {
+            if (selectResult.rows.length === 0) {
                 return null;
             }
 
-            return result.rows[0];
+            const recordId = selectResult.rows[0].id;
+
+            const updateResult = await pgPoolQuery(updateSql, [recordId]);
+
+            return updateResult.rows[0];
         } catch (error) {
-            console.error('Error updating record:', error);
-            throw new Error('Error updating record');
+            console.error('Error updating watched count for current month:', error);
+            throw new Error('Error updating watched count for current month');
         }
     }
 
