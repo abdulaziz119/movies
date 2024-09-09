@@ -19,4 +19,5 @@ export interface MoviesModel extends BaseModel {
     genre: string,
     create_admin_id: number,
     seen?: number,
+    movie_type?: string
 }

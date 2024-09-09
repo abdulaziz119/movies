@@ -9,6 +9,7 @@ import {
 import { SeriesRepository} from "../../repository";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import {Response } from 'express';
 
 export class DashboardSeriesController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<SeriesModule>>, res: Response) {

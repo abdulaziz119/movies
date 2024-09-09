@@ -1,4 +1,6 @@
 import { MoviesRepository} from "../../repository";
+import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import {Response } from 'express';
 import {
     ErrorEnum,
     MoviesModel,
@@ -7,8 +9,7 @@ import {
     ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
-import {ErrorService, getPaginationResponse, MovieService, ResponseHelper} from "../../utils";
-import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 
 export class DashboardMoviesController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<MoviesModel>>, res: Response) {
@@ -24,14 +25,14 @@ export class DashboardMoviesController {
 
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
-            const result = await MovieService.getOne(req.params,req.headers['accept-language'] ?? 'uz')
+            const result = await MoviesRepository.getOne(req.params,req.headers['accept-language'] ?? 'uz')
             return ResponseHelper.success(res, result)
         } catch (error) {
             return ErrorService.error(res, error)
         }
     }
 
-    static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res) {
+    static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res:Response) {
         try {
             const data:MoviesModel[]  = await MoviesRepository.getAll(req.query,req.headers['accept-language'] ?? 'uz')
 
@@ -45,7 +46,7 @@ export class DashboardMoviesController {
         }
     }
 
-    static async queryGet(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number, query: string}>>, res) {
+    static async queryGet(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number, query: string}>>, res:Response) {
         try {
             if (req.query.limit <= 0 || req.query.page <= 0) {
                 throw new Error('Invalid pagination parameters');
@@ -66,6 +67,15 @@ export class DashboardMoviesController {
         try {
             await MoviesRepository.delete(req.params.id)
             return ResponseHelper.success(res, null, StatusCodes.NO_CONTENT)
+        } catch (error) {
+            return ErrorService.error(res, error)
+        }
+    }
+
+    static async genreGetAll(req:Request, res:Response) {
+        try {
+            const result = await MoviesRepository.genreGetAll()
+            return ResponseHelper.success(res, result)
         } catch (error) {
             return ErrorService.error(res, error)
         }

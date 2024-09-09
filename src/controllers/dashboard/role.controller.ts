@@ -7,8 +7,9 @@ import {
     ValidatedRequestQuery
 } from "../../models";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
-import {AdminsRepository, RolesRepository} from "../../repository";
+import {RolesRepository} from "../../repository";
 import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import { Response } from 'express';
 
 export class DashboardRoleController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<RolesModel>>, res: Response) {

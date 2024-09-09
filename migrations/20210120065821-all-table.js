@@ -53,6 +53,7 @@ exports.up = function (db, callback) {
             genre VARCHAR(255),
             create_admin_id INTEGER REFERENCES public.admin(id),
             seen INTEGER DEFAULT 0,
+            movie_type VARCHAR(255) DEFAULT 'movie',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             deleted_at TIMESTAMP DEFAULT NULL
@@ -63,7 +64,6 @@ exports.up = function (db, callback) {
         (
             id SERIAL PRIMARY KEY UNIQUE,
             url VARCHAR(255),
-            movie_id INTEGER REFERENCES public.movies(id),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             deleted_at TIMESTAMP DEFAULT NULL

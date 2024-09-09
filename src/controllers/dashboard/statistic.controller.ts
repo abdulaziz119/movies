@@ -7,6 +7,7 @@ import {
 import { StatisticsRepository} from "../../repository";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 import {StatusCodes} from "http-status-codes";
+import {Response } from 'express';
 
 export class DashboardStatisticController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {

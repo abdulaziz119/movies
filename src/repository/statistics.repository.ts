@@ -34,6 +34,31 @@ export class StatisticsRepository {
         }
     }
 
+    static async IncrementWatchedCount(): Promise<StatisticsModel | null> {
+        const sql = `
+            UPDATE statistics
+            SET watched = watched + 1, updated_at = CURRENT_TIMESTAMP
+            WHERE id = (
+                SELECT id FROM statistics
+                ORDER BY created_at DESC
+                LIMIT 1
+            )
+            RETURNING *;
+        `;
+
+        try {
+            const result = await pgPoolQuery(sql);
+
+            if (result.rows.length === 0) {
+                return null;
+            }
+
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error updating record:', error);
+            throw new Error('Error updating record');
+        }
+    }
 
     static async getOne(id: number): Promise<StatisticsModel | null> {
         const sql = `SELECT * FROM statistics WHERE id = $1 AND deleted_at IS NULL;`;

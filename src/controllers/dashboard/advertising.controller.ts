@@ -1,13 +1,13 @@
 import {
     AdvertisingModule, ErrorEnum,
-    MoviesModel,
     ValidatedRequest,
     ValidatedRequestBody, ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
-import {AdvertisingRepository, MoviesRepository, RolesRepository} from "../../repository";
+import {AdvertisingRepository} from "../../repository";
 import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import {Response } from 'express';
 
 export class DashboardAdvertisingController {
 

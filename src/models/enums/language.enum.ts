@@ -1,6 +1,6 @@
-export type LANGUAGES = 'ru' | 'en' | 'uz';
-export enum LANGUAGES_ENUM {
-    RU = 'ru',
-    EN = 'en',
-    UZ = 'uz'
+import { IncomingHttpHeaders } from 'http';
+
+export interface CustomHeaders extends IncomingHttpHeaders {
+    authorization: string;
+    language: 'uz' | 'ru' | 'en';
 }

@@ -8,6 +8,7 @@ import {
 import {AdminsService, ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 import {AdminsRepository} from "../../repository";
 import {StatusCodes} from "http-status-codes";
+import {Response } from 'express';
 
 export class DashboardAdminController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<AdminModel>>, res: Response) {

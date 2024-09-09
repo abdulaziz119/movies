@@ -15,11 +15,20 @@ export const movieSchema = Joi.object({
     state: Joi.string().optional(),
     year: Joi.string().optional(),
     genre: Joi.string().optional(),
-    create_admin_id: Joi.number().integer().required()
+    create_admin_id: Joi.number().integer().required(),
+    movie_type: Joi.string().optional()
 });
 
 export const params_query_joi = Joi.object({
     limit: Joi.number().min(5).required(),
     page: Joi.number().min(1).required(),
     query: Joi.string().required()
+}).unknown(true);
+
+export const getFilteredMoviesWithPagination_joi = Joi.object({
+    limit: Joi.number().min(5).required(),
+    page: Joi.number().min(1).required(),
+    year: Joi.string().optional(),
+    genre: Joi.string().optional(),
+    name: Joi.string().optional()
 }).unknown(true);

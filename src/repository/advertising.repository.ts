@@ -1,4 +1,4 @@
-import {AdvertisingModule, pgPoolQuery, RolesModel} from '..';
+import {AdvertisingModule, pgPoolQuery} from '..';
 
 export class AdvertisingRepository {
 

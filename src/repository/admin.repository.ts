@@ -1,5 +1,4 @@
 import {AdminModel, ErrorEnum, pgPoolQuery} from '..';
-import {params_joi} from "../validation/other.validation";
 import {ValidationException} from "../exceptions/validation.exception";
 
 

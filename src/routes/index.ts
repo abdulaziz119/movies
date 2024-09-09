@@ -1,15 +1,15 @@
 import * as express from "express";
 import {errorHandler} from "..";
-import {DashboardAdminRoutes} from "./dashboard/admin.routes";
-import {DashboardRoleRoutes} from "./dashboard/role.routes";
-import {DashboardMoviesRoutes} from "./dashboard/movies.routes";
-import {DashboardStatisticRoutes} from "./dashboard/statistic.routes"
+import {DashboardAdminRoutes} from "./dashboard/dashboard-admin.routes";
+import {DashboardRoleRoutes} from "./dashboard/dashboard-role.routes";
+import {DashboardMoviesRoutes} from "./dashboard/dashboard-movies.routes";
+import {DashboardStatisticRoutes} from "./dashboard/dashboard-statistic.routes"
 import {FrontendMoviesRoutes} from "./frontend/frontend-movies.routes";
 import {FrontendStatisticRoutes} from "./frontend/frontend-statistic.routes";
 import {FrontendUploadRoutes} from "./frontend/frontend-upload.routes";
-import {DashboardAdvertisingRoutes} from "./dashboard/advertising.routes";
+import {DashboardAdvertisingRoutes} from "./dashboard/dashboard-advertising.routes";
 import {FrontendSeriesRoutes} from "./frontend/frontend-series.routes";
-import {DashboardSeriesRoutes} from "./dashboard/series.routes";
+import {DashboardSeriesRoutes} from "./dashboard/dashboard-series.routes";
 
 function nestedRoutes(this: any, path, configure) {
     const router = express.Router({mergeParams: true});
