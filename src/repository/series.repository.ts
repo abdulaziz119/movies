@@ -334,18 +334,38 @@ export class SeriesRepository {
         }
     }
 
-    static async frontendGetAllMovies(params: { limit: number, page: number, movies_id: number[] },language:string): Promise<any[]> {
+    static async frontendGetAllMovies(params: { limit: number, page: number, movies_id: number[] }, language: string): Promise<any[]> {
         if (params.limit <= 0 || params.page <= 0) {
             throw new Error('Invalid pagination parameters');
         }
-        const lang= language||'uz';
 
-        const sql = `
-        `;
+        const lang = language || 'uz'; // Default language is 'uz'
         const offset: number = (params.page - 1) * params.limit;
 
+        const sql = `
+        SELECT 
+            id,
+            name->>\$1 AS name,
+            url->>\$1 AS url,
+            quality,
+            duration,
+            state,
+            year,
+            genre,
+            seen,
+            movie_type,
+            created_at,
+            updated_at
+        FROM movies
+        WHERE id = ANY(\$2)
+        AND movie_type = 'serie'
+        AND deleted_at IS NULL
+        LIMIT \$3
+        OFFSET \$4;
+    `;
+
         try {
-            const result = await pgPoolQuery(sql, [params.limit, offset, lang]);
+            const result = await pgPoolQuery(sql, [lang, params.movies_id, params.limit, offset]);
 
             if (!result.rows || result.rows.length === 0) {
                 return [];
@@ -353,9 +373,11 @@ export class SeriesRepository {
 
             return result.rows;
         } catch (error) {
-            console.error(`Error fetching series: ${error instanceof Error ? error.message : 'Unknown error'}`);
-            throw new Error(`Error fetching series: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            console.error(`Error fetching movies: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(`Error fetching movies: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
+
+
 
 }
