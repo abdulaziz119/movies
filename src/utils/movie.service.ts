@@ -1,7 +1,7 @@
 import {
-    ErrorEnum, MoviesModel,
+    ErrorEnum, MoviesModel, StatisticsService,
 } from '..';
-import { MoviesRepository, StatisticsRepository} from "../repository";
+import { MoviesRepository} from "../repository";
 import {ValidationException} from "../exceptions/validation.exception";
 
 
@@ -10,8 +10,7 @@ export class MovieService {
     static async frontendGetOne(params: { id: number }, language: string): Promise<any> {
         try {
             const result = await MoviesRepository.frontendGetOne(params,language)
-            await StatisticsRepository.checkSeriesCreate({type: 'weep'});
-            await StatisticsRepository.IncrementWatchedCount()
+            await StatisticsService.incrementWatchedCount({type: 'web'})
             return result
         }catch (error) {
             throw new ValidationException(ErrorEnum.FailedToCreateStatistics)

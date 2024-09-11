@@ -1,7 +1,7 @@
 import {MoviesModel, ValidatedRequest, ValidatedRequestParams, ValidatedRequestQuery} from "../../models";
-import {MoviesRepository} from "../../repository";
+import {MoviesRepository, StatisticsRepository} from "../../repository";
 import {Response } from 'express';
-import {ErrorService, getPaginationResponse, MovieService, ResponseHelper} from "../../utils";
+import {ErrorService, getPaginationResponse, MovieService, ResponseHelper, StatisticsService} from "../../utils";
 
 export class BotMoviesController {
 
@@ -21,7 +21,8 @@ export class BotMoviesController {
 
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
-            const result = await MovieService.frontendGetOne(req.params,req.headers['accept-language'] ?? 'uz')
+            const result = await MoviesRepository.frontendGetOne(req.params,req.headers['accept-language'] ?? 'uz')
+            await StatisticsService.incrementWatchedCount({type: 'bot'})
             return ResponseHelper.success(res, result)
         } catch (error) {
             return ErrorService.error(res, error)

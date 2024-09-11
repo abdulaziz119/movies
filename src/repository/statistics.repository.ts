@@ -1,77 +1,55 @@
 import {pgPoolQuery, StatisticsModel} from '..';
 
 export class StatisticsRepository {
-
-    static async checkSeriesCreate(params: { type: string }): Promise<any> {
-        const now = new Date();
-        const month = now.toISOString().slice(0, 7);
-
-        const checkSql = `
-        SELECT * FROM statistics
-        WHERE month = $1 AND type = $2;
-    `;
-        const checkValues = [month, params.type];
-
+    static async findLatestByMonthAndType(month: string, type: string): Promise<any> {
+        const selectSql = `
+            SELECT id
+            FROM statistics
+            WHERE month = $1 AND type = $2
+            ORDER BY created_at DESC
+            LIMIT 1;
+        `;
         try {
-            const checkResult = await pgPoolQuery(checkSql, checkValues);
+            const result = await pgPoolQuery(selectSql, [month, type]);
+            return result.rows.length > 0 ? result.rows[0] : null;
+        } catch (error) {
+            console.error('Error finding latest statistics by month and type:', error);
+            throw new Error('Error finding latest statistics by month and type');
+        }
+    }
 
-            if (checkResult.rows.length > 0) {
-                return checkResult.rows[0];
-            }
-
-            const insertSql = `
-            INSERT INTO statistics (month, type)
-            VALUES ($1, $2)
+    static async createStatistics(month: string, type: string): Promise<StatisticsModel> {
+        const insertSql = `
+            INSERT INTO statistics (month, type, watched)
+            VALUES ($1, $2, 1)
             RETURNING *;
         `;
-            const insertValues = [month, params.type];
-            const insertResult = await pgPoolQuery(insertSql, insertValues);
-
-            return insertResult.rows[0];
-        } catch (error) {
-            console.error('Error inserting statistics:', error);
-            throw new Error('Failed to create statistics');
-        }
-    }
-
-
-    static async IncrementWatchedCount(): Promise<StatisticsModel | null> {
-        const now = new Date();
-        const currentMonth = now.toISOString().slice(0, 7);
-
-        const selectSql = `
-        SELECT id
-        FROM statistics
-        WHERE month = $1
-        ORDER BY created_at DESC
-        LIMIT 1;
-    `;
-
-        const updateSql = `
-        UPDATE statistics
-        SET watched = watched + 1,
-            updated_at = CURRENT_TIMESTAMP
-        WHERE id = $1
-        RETURNING *;
-    `;
-
         try {
-            const selectResult = await pgPoolQuery(selectSql, [currentMonth]);
-
-            if (selectResult.rows.length === 0) {
-                return null;
-            }
-
-            const recordId = selectResult.rows[0].id;
-
-            const updateResult = await pgPoolQuery(updateSql, [recordId]);
-
-            return updateResult.rows[0];
+            const result = await pgPoolQuery(insertSql, [month, type]);
+            return result.rows[0];
         } catch (error) {
-            console.error('Error updating watched count for current month:', error);
-            throw new Error('Error updating watched count for current month');
+            console.error('Error creating statistics:', error);
+            throw new Error('Error creating statistics');
         }
     }
+
+    static async incrementWatchedCount(id: number): Promise<StatisticsModel> {
+        const updateSql = `
+            UPDATE statistics
+            SET watched = watched + 1,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = $1
+            RETURNING *;
+        `;
+        try {
+            const result = await pgPoolQuery(updateSql, [id]);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error updating watched count:', error);
+            throw new Error('Error updating watched count');
+        }
+    }
+
 
     static async getOne(id: number): Promise<StatisticsModel | null> {
         const sql = `SELECT * FROM statistics WHERE id = $1 AND deleted_at IS NULL;`;
