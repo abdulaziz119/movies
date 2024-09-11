@@ -28,6 +28,7 @@ export class FrontendAdvertisingController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await AdvertisingRepository.frontedGetOne(req.params)
+            await  AdvertisingRepository.incrementSeenIfNot(result.id)
             return ResponseHelper.success(res, result)
         } catch (error) {
             return ErrorService.error(res, error)

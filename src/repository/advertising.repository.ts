@@ -83,12 +83,13 @@ export class AdvertisingRepository {
     }
 
 
-    static async frontedGetAll(params: { limit: number, page: number }): Promise<AdvertisingModule[] > {
+    static async frontedGetAll(params: { limit: number, page: number }): Promise<AdvertisingModule[]> {
         const sql = `
-            SELECT * FROM public.advertising
-            WHERE deleted_at IS NULL
-            LIMIT $1 OFFSET $2;
-        `;
+        SELECT * FROM public.advertising
+        WHERE deleted_at IS NULL
+        AND seen <> finish
+        LIMIT $1 OFFSET $2;
+    `;
 
         const offset = (params.page - 1) * params.limit;
 
@@ -96,21 +97,22 @@ export class AdvertisingRepository {
             const result = await pgPoolQuery(sql, [params.limit, offset]);
 
             if (!result.rows || result.rows.length === 0) {
-                throw new Error('No advertising found');
+                return [];
             }
 
-            return result.rows;
+            return result.rows as AdvertisingModule[];
         } catch (error) {
-            console.error(`Error fetching advertising: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            console.error(`Error fetching advertising with limit ${params.limit} and page ${params.page}: ${error instanceof Error ? error.message : 'Unknown error'}`);
             throw new Error('Error fetching advertising');
         }
     }
 
-    static async frontedGetOne(params:{id: number}): Promise<AdvertisingModule | null> {
+    static async frontedGetOne(params:{id: number}): Promise<any> {
         const sql = `
             SELECT * FROM public.advertising
             WHERE id = $1
-              AND deleted_at IS NULL;
+              AND deleted_at IS NULL
+              AND seen <> finish;
         `;
 
         try {
@@ -124,6 +126,23 @@ export class AdvertisingRepository {
         } catch (error) {
             console.error(`Error fetching advertising by ID: ${error}`);
             throw new Error('Error fetching advertising by ID');
+        }
+    }
+
+    static async incrementSeenIfNot(id: number): Promise<void> {
+        const sqlUpdate = `
+        UPDATE advertising
+        SET seen = seen + 1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND deleted_at IS NULL;
+    `;
+
+        try {
+            const result = await pgPoolQuery(sqlUpdate, [id]);
+
+            console.log(`Rows updated: ${result.rowCount}`);
+        } catch (error) {
+            console.error(`Error incrementing seen value for advertising with ID ${id}: ${error}`);
+            throw new Error('Error incrementing seen value for advertising');
         }
     }
 }
