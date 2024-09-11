@@ -82,4 +82,48 @@ export class AdvertisingRepository {
         }
     }
 
+
+    static async frontedGetAll(params: { limit: number, page: number }): Promise<AdvertisingModule[] > {
+        const sql = `
+            SELECT * FROM public.advertising
+            WHERE deleted_at IS NULL
+            LIMIT $1 OFFSET $2;
+        `;
+
+        const offset = (params.page - 1) * params.limit;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.limit, offset]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No advertising found');
+            }
+
+            return result.rows;
+        } catch (error) {
+            console.error(`Error fetching advertising: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error('Error fetching advertising');
+        }
+    }
+
+    static async frontedGetOne(params:{id: number}): Promise<AdvertisingModule | null> {
+        const sql = `
+            SELECT * FROM public.advertising
+            WHERE id = $1
+              AND deleted_at IS NULL;
+        `;
+
+        try {
+            const result = await pgPoolQuery(sql, [params.id]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new Error('No roles found');
+            }
+
+            return result.rows[0];
+        } catch (error) {
+            console.error(`Error fetching advertising by ID: ${error}`);
+            throw new Error('Error fetching advertising by ID');
+        }
+    }
 }

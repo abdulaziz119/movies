@@ -2,7 +2,7 @@ import {SeriesModule, ValidatedRequest, ValidatedRequestParams, ValidatedRequest
 import { SeriesRepository} from "../../repository";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 
-export class FrontendSeriesController {
+export class BotSeriesController {
     static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res) {
         try {
             const data:SeriesModule[]  = await SeriesRepository.frontendGetAll(req.query,req.headers['accept-language'] ?? 'uz')

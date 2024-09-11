@@ -4,19 +4,20 @@ import {pgPoolQuery} from "../database";
 export class SeriesRepository {
     static async create(params: SeriesModule): Promise<SeriesModule> {
         const sql = `
-            INSERT INTO series (name, movies,state,year,genre,seen,create_admin_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            RETURNING *;
-        `;
+        INSERT INTO series (name, code, movies, state, year, genre, seen, create_admin_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *;
+    `;
 
         const values = [
             JSON.stringify(params.name),
+            params.code,
             params.movies,
             params.state,
             params.year,
             params.genre,
-            params.seen||0,
-            params.create_admin_id,
+            params.seen ?? 0,
+            params.create_admin_id
         ];
 
         try {
@@ -28,6 +29,7 @@ export class SeriesRepository {
         }
     }
 
+
     static async getOne(params: { id: number }, language: string): Promise<SeriesModule | null> {
         const lang = language || 'uz';
 
@@ -38,6 +40,7 @@ export class SeriesRepository {
             movies,
             state,
             year,
+            code,
             genre,
             seen,
             create_admin_id,
@@ -63,6 +66,7 @@ export class SeriesRepository {
                 name: series.name,
                 state: series.state,
                 year: series.year,
+                code: series.code,
                 genre: series.genre,
                 seen: series.seen,
                 create_admin_id: series.create_admin_id,
@@ -75,71 +79,6 @@ export class SeriesRepository {
             throw new Error('Error fetching series by ID');
         }
     }
-
-    // static async getOne(params: { id: number }, language: string): Promise<SeriesModule | null> {
-    //     const lang = language || 'uz';
-    //
-    //     const sqlSeries = `
-    //     SELECT
-    //         id,
-    //         name ->> $2 AS name,
-    //         create_admin_id,
-    //         movies
-    //     FROM
-    //         series
-    //     WHERE
-    //         id = $1
-    //         AND deleted_at IS NULL;
-    // `;
-    //
-    //     try {
-    //         const resultSeries = await pgPoolQuery(sqlSeries, [params.id, lang]);
-    //
-    //         if (!resultSeries.rows || resultSeries.rows.length === 0) {
-    //             return null;
-    //         }
-    //
-    //         const series = resultSeries.rows[0];
-    //
-    //         let moviesDetails = [];
-    //         if (series.movies && series.movies.length > 0) {
-    //             const sqlMovies = `
-    //             SELECT
-    //                 id,
-    //                 name ->> $2 AS name,
-    //                 url ->> $2 AS url,
-    //                 quality,
-    //                 duration,
-    //                 state,
-    //                 year,
-    //                 genre,
-    //                 create_admin_id,
-    //                 seen
-    //             FROM
-    //                 movies
-    //             WHERE
-    //                 id = ANY($1::int[])
-    //                 AND deleted_at IS NULL;
-    //         `;
-    //
-    //             const resultMovies = await pgPoolQuery(sqlMovies, [series.movies, lang]);
-    //
-    //             moviesDetails = resultMovies.rows;
-    //         }
-    //
-    //         const seriesResponse: SeriesModule = {
-    //             id: series.id,
-    //             name: series.name,
-    //             movies: moviesDetails,
-    //             create_admin_id: series.create_admin_id,
-    //         };
-    //
-    //         return seriesResponse;
-    //     } catch (error) {
-    //         console.error(`Error fetching series by ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    //         throw new Error('Error fetching series by ID');
-    //     }
-    // }
 
     static async getAll(params: { limit: number, page: number },language:string): Promise<any[]> {
         if (params.limit <= 0 || params.page <= 0) {
@@ -154,6 +93,9 @@ export class SeriesRepository {
                 create_admin_id,
                 movies,
                 seen,
+                state,
+                year,
+                code,
                 created_at,
                 updated_at
             FROM public.series
@@ -220,9 +162,10 @@ export class SeriesRepository {
             seen = $4,
             year = $5,
             state = $6,
-            create_admin_id = $7,
+            code = $7,
+            create_admin_id = $8,
             updated_at = NOW()
-        WHERE id = $8
+        WHERE id = $9
         RETURNING id, name, movies, genre, seen, year, state, create_admin_id, created_at, updated_at, deleted_at;
     `;
 
@@ -233,6 +176,7 @@ export class SeriesRepository {
                 params.genre,
                 params.seen,
                 params.year,
+                params.code,
                 params.state,
                 params.create_admin_id,
                 params.id
@@ -263,6 +207,9 @@ export class SeriesRepository {
                 create_admin_id,
                 movies,
                 seen,
+                state,
+                year,
+                code,
                 created_at,
                 updated_at
             FROM public.series
@@ -296,6 +243,7 @@ export class SeriesRepository {
             movies,
             state,
             year,
+            code,
             genre,
             seen,
             create_admin_id,
@@ -321,6 +269,7 @@ export class SeriesRepository {
                 name: series.name,
                 state: series.state,
                 year: series.year,
+                code: series.code,
                 genre: series.genre,
                 seen: series.seen,
                 create_admin_id: series.create_admin_id,

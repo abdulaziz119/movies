@@ -5,9 +5,10 @@ export const moviesSchema = Joi.object({
     name: languageSchema.required(),
     movies: Joi.array().required(),
     state: Joi.string().required(),
-    genre: Joi.string().required(),
     year: Joi.string().required(),
-    create_admin_id: Joi.number().required()
+    genre: Joi.string().required(),
+    create_admin_id: Joi.number().required(),
+    code: Joi.number().required()
 });
 
 export const paramsMovies_id_joi = Joi.object({

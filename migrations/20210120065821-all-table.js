@@ -59,16 +59,6 @@ exports.up = function (db, callback) {
             deleted_at TIMESTAMP DEFAULT NULL
         );
 
-        -- Create uploads table
-        CREATE TABLE IF NOT EXISTS public.uploads
-        (
-            id SERIAL PRIMARY KEY UNIQUE,
-            url VARCHAR(255),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            deleted_at TIMESTAMP DEFAULT NULL
-        );
-
         -- Create statistics table (renamed from users)
         CREATE TABLE IF NOT EXISTS public.statistics
         (
@@ -105,6 +95,7 @@ exports.up = function (db, callback) {
             state VARCHAR(255),
             year VARCHAR(255),
             genre VARCHAR(255),
+            code INTEGER UNIQUE,
             seen INTEGER DEFAULT 0,
             create_admin_id INTEGER REFERENCES public.admin(id),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
