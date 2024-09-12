@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: movies-app-nest
+    container_name: movies-express
     restart: on-failure
     volumes:
       - ./src:/app/src
@@ -12,12 +12,12 @@ services:
     ports:
       - '3000:3000'
 
-#  postgres:
-#    image: postgres
-#    container_name: postgres
-#    environment:
-#      POSTGRES_USER: dev_user
-#      POSTGRES_PASSWORD: dev_pass
-#      POSTGRES_DB: services
-#    ports:
-#      - "5433:5432"  # Map the container's port 5432 to host's port 5433
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_pass
+      POSTGRES_DB: services
+    ports:
+      - "5433:5432"  # Map the container's port 5432 to host's port 5433
