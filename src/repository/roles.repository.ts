@@ -1,7 +1,8 @@
 import {pgPoolQuery} from "../database";
-import { RolesModel} from "../models";
-export class RolesRepository {
+import {ErrorEnum, RolesModel} from "../models";
+import {ValidationException} from "../exceptions/validation.exception";
 
+export class RolesRepository {
     static async create(params: RolesModel ): Promise<RolesModel | null> {
         const adminCheckSql = `
             SELECT * FROM public.admin
@@ -100,6 +101,26 @@ export class RolesRepository {
         } catch (error) {
             console.error('Error deleting roles:', error);
             throw new Error('Failed to delete roles');
+        }
+    }
+
+    static async checkGetOne(id: number): Promise<RolesModel | null> {
+        const sql = `
+        SELECT * FROM public.roles
+        WHERE id = $1;
+    `;
+
+        try {
+            const result = await pgPoolQuery(sql, [id]);
+
+            if (!result.rows || result.rows.length === 0) {
+                throw new ValidationException(ErrorEnum.RoleId);
+            }
+
+            return result.rows[0];
+        } catch (error) {
+            console.error(`Error fetching role by ID ${id}:`, error);
+            throw new Error('Error fetching role by ID');
         }
     }
 }

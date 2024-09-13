@@ -42,7 +42,6 @@ export class AdminsRepository {
         if (!result.rows[0].boss_admin || result.rows[0] === false) {
             throw new Error('No admins found');
         }
-        console.log(result.rows[0],'boss_admin')
         return result.rows[0];
     }
 
@@ -106,23 +105,6 @@ export class AdminsRepository {
         }
     }
 
-    static async checkGetOne(id: number): Promise<any> {
-        const sql = `
-            SELECT * FROM public.admin
-            WHERE id = $1;
-        `;
-
-        try {
-            const result = await pgPoolQuery(sql, [id]);
-            if (!result.rows || result.rows.length === 0) {
-                if (!result) throw new ValidationException(ErrorEnum.RoleId)
-            }
-            return result.rows[0];
-        } catch (error) {
-            console.error(`Error fetching role by ID: ${error}`);
-            throw new Error('Error fetching role by ID');
-        }
-    }
 
     static async delete(id: number): Promise<void> {
         const sql: string = `UPDATE admin
