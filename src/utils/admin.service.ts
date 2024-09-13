@@ -6,11 +6,17 @@ import {ValidationException} from "../exceptions/validation.exception";
 
 export class AdminsService {
 
-    static async create(params: AdminModel): Promise<any> {
+    static async create(params: any): Promise<any> {
         try {
             const authorizationService: AuthorizationService = new AuthorizationService();
             params.password = Md5.hashStr(params.password)
+            const checkBossAdmin:any = await AdminsRepository.checkBossAdmin(params.user_id)
+            console.log(checkBossAdmin,'chackBossAdmin')
+            if (!checkBossAdmin.boss_admin && checkBossAdmin.boss_adm===false) {
+                throw new ValidationException(ErrorEnum.CreateNotAdmin)
+            }
             const user: AdminModel = await AdminsRepository.create(params)
+            console.log(user,'user')
             const role=AdminsRepository.checkGetOne(user.role_id)
             const token:string = await authorizationService.sign(user,role)
             let data = {

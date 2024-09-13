@@ -1,6 +1,7 @@
 import {BaseModel} from "..";
 
 export interface AdminModel extends BaseModel {
+    user_id?: number,
     first_name: string,
     last_name: string,
     language:string

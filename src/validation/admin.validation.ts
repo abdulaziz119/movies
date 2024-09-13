@@ -1,6 +1,7 @@
 import * as Joi from 'joi'
 
 const admin_joi = Joi.object({
+    user_id: Joi.number().required(),
     email: Joi.string().required(),
     password: Joi.string().min(8).required(),
     language: Joi.string().required(),
@@ -12,7 +13,7 @@ const admin_joi = Joi.object({
 
 const admin_login_joi = Joi.object({
     email: Joi.string().required(),
-    password: Joi.string().min(8).required(),
+    password: Joi.string().min(3).required(),
 }).unknown(true);
 
 export {

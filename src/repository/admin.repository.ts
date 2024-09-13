@@ -6,8 +6,8 @@ export class AdminsRepository {
 
     static async create(params: AdminModel): Promise<AdminModel> {
         const sql = `
-            INSERT INTO public.admin (first_name, last_name, role_id, boss_admin, email, password)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO public.admin (first_name, last_name, role_id,language, boss_admin, email, password)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `;
 
@@ -17,6 +17,7 @@ export class AdminsRepository {
             params.first_name,
             params.last_name,
             params.role_id,
+            params.language,
             bossAdmin,
             params.email,
             params.password
@@ -30,6 +31,20 @@ export class AdminsRepository {
         return result.rows[0];
     }
 
+    static async checkBossAdmin(user_id: number): Promise<AdminModel | null> {
+        const sql = `
+            SELECT * FROM public.admin
+            WHERE id = $1;
+        `;
+
+        const result = await pgPoolQuery(sql, [user_id]);
+
+        if (!result.rows[0].boss_admin || result.rows[0] === false) {
+            throw new Error('No admins found');
+        }
+        console.log(result.rows[0],'boss_admin')
+        return result.rows[0];
+    }
 
     static async login(params: { email: string, password: string }): Promise<AdminModel | null> {
         const sql = `
@@ -102,7 +117,7 @@ export class AdminsRepository {
             if (!result.rows || result.rows.length === 0) {
                 if (!result) throw new ValidationException(ErrorEnum.RoleId)
             }
-            return result.rows[0].role_id;
+            return result.rows[0];
         } catch (error) {
             console.error(`Error fetching role by ID: ${error}`);
             throw new Error('Error fetching role by ID');
