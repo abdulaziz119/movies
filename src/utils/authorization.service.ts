@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export class AuthorizationService {
   async sign(user: any,role: any): Promise<string> {
     const data = {
-      user_id: user.user_id,
+      user_id: user.id,
       email: user.email,
       password: user.password,
       admin: role.admin,
