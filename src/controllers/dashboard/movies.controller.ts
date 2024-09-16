@@ -1,7 +1,8 @@
-import { MoviesRepository} from "../../repository";
+import {AdvertisingRepository, MoviesRepository} from "../../repository";
 import {NOT_FOUND, StatusCodes} from "http-status-codes";
 import {Response } from 'express';
 import {
+    AdvertisingModule,
     ErrorEnum,
     MoviesModel,
     ValidatedRequest,
@@ -34,13 +35,17 @@ export class DashboardMoviesController {
 
     static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res) {
         try {
-            const data:MoviesModel[]  = await MoviesRepository.getAll(req.query,req.headers['accept-language'] ?? 'uz')
+            const result:MoviesModel[]  = await MoviesRepository.getAll(req.query,req.headers['accept-language'] ?? 'uz')
 
-            if (!data[0]) return res.send([]);
-            if (req.query.limit && !isNaN(req.query.page))
-                return res.send(getPaginationResponse<MoviesModel>(data, req.query.page, req.query.limit, Number(data[0].count)))
+            let [page, limit] = [req.query.page ?? 1, req.query.limit ?? 20]
 
-            return res.send(data);
+            let count: number = result[0] ? Number(result[0].count) : 0
+
+            result.map(item => {
+                delete item.count
+            })
+
+            return ResponseHelper.pagination(res, result, page, limit, count)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -51,13 +56,17 @@ export class DashboardMoviesController {
             if (req.query.limit <= 0 || req.query.page <= 0) {
                 throw new Error('Invalid pagination parameters');
             }
-            const data:MoviesModel[]  = await MoviesRepository.queryGet(req.query)
+            const result:MoviesModel[]  = await MoviesRepository.queryGet(req.query)
 
-            if (!data[0]) return res.send([]);
-            if (req.query.limit && !isNaN(req.query.page))
-                return res.send(getPaginationResponse<MoviesModel>(data, req.query.page, req.query.limit, Number(data[0].count)))
+            let [page, limit] = [req.query.page ?? 1, req.query.limit ?? 20]
 
-            return res.send(data);
+            let count: number = result[0] ? Number(result[0].count) : 0
+
+            result.map(item => {
+                delete item.count
+            })
+
+            return ResponseHelper.pagination(res, result, page, limit, count)
         } catch (error) {
             return ErrorService.error(res, error)
         }

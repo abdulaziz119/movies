@@ -1,11 +1,12 @@
 import {
+    AdminModel,
     AdvertisingModule, ErrorEnum,
     ValidatedRequest,
     ValidatedRequestBody, ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
-import {AdvertisingRepository} from "../../repository";
+import {AdminsRepository, AdvertisingRepository} from "../../repository";
 import {NOT_FOUND, StatusCodes} from "http-status-codes";
 import {Response } from 'express';
 
@@ -26,13 +27,16 @@ export class DashboardAdvertisingController {
 
     static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res) {
         try {
-            const data:AdvertisingModule[]  = await AdvertisingRepository.getAll(req.query)
+            const result:AdvertisingModule[]  = await AdvertisingRepository.getAll(req.query)
+            let [page, limit] = [req.query.page ?? 1, req.query.limit ?? 20]
 
-            if (!data[0]) return res.send([]);
-            if (req.query.limit && !isNaN(req.query.page))
-                return res.send(getPaginationResponse<AdvertisingModule>(data, req.query.page, req.query.limit, Number(data[0].count)))
+            let count: number = result[0] ? Number(result[0].count) : 0
 
-            return res.send(data);
+            result.map(item => {
+                        delete item.count
+            })
+
+            return ResponseHelper.pagination(res, result, page, limit, count)
         } catch (error) {
             return ErrorService.error(res, error)
         }

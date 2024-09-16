@@ -21,13 +21,17 @@ export class DashboardStatisticController {
 
     static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res) {
         try {
-            const data:StatisticsModel[]  = await StatisticsRepository.getAll(req.query)
+            const result:StatisticsModel[]  = await StatisticsRepository.getAll(req.query)
 
-            if (!data[0]) return res.send([]);
-            if (req.query.limit && !isNaN(req.query.page))
-                return res.send(getPaginationResponse<StatisticsModel>(data, req.query.page, req.query.limit, Number(data[0].count)))
+            let [page, limit] = [req.query.page ?? 1, req.query.limit ?? 20]
 
-            return res.send(data);
+            let count: number = result[0] ? Number(result[0].count) : 0
+
+            result.map(item => {
+                delete item.count
+            })
+
+            return ResponseHelper.pagination(res, result, page, limit, count)
         } catch (error) {
             return ErrorService.error(res, error)
         }
