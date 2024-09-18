@@ -1,6 +1,7 @@
 import {SeriesModule, ValidatedRequest, ValidatedRequestParams, ValidatedRequestQuery} from "../../models";
 import { SeriesRepository} from "../../repository";
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
+import {StatusCodes} from "http-status-codes";
 
 export class BotSeriesController {
     static async getAll(req: ValidatedRequest<ValidatedRequestQuery<{limit: number, page: number}>>, res) {
@@ -24,7 +25,7 @@ export class BotSeriesController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res) {
         try {
             const result = await SeriesRepository.FrontendGetOne(req.params,req.headers['accept-language'] ?? 'uz')
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

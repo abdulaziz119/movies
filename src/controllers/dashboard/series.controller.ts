@@ -7,17 +7,17 @@ import {
     ValidatedRequestQuery
 } from "../../models";
 import { SeriesRepository} from "../../repository";
-import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
-import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import {ErrorService, ResponseHelper} from "../../utils";
+import { StatusCodes} from "http-status-codes";
 import {Response } from 'express';
 
 export class DashboardSeriesController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<SeriesModule>>, res: Response) {
         try {
             const result: SeriesModule = await SeriesRepository.create(req.body)
-            if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateSeries)
+            if (!result) return ErrorService.error(res, {}, StatusCodes.NOT_FOUND, ErrorEnum.FailedToCreateSeries)
 
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.CREATED)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -26,7 +26,7 @@ export class DashboardSeriesController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await SeriesRepository.getOne(req.params,req.headers['accept-language'] ?? 'uz')
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -61,10 +61,12 @@ export class DashboardSeriesController {
 
     static async update(req: ValidatedRequest<ValidatedRequestBody<SeriesModule>>, res) {
         try {
-            req.body.id = req.params.id;
-            let data = await SeriesRepository.update(req.body);
-
-            return res.send(data);
+            let newData={
+                id:req.params.id,
+                    ...req.body
+            }
+             await SeriesRepository.update(newData);
+            return ResponseHelper.success(newData, null, StatusCodes.NO_CONTENT)
         } catch (error) {
             return ErrorService.error(res, error);
         }

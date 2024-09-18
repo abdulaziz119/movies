@@ -5,7 +5,7 @@ import {
     ValidatedRequestQuery
 } from "../../models";
 import { StatisticsRepository} from "../../repository";
-import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
+import {ErrorService, ResponseHelper} from "../../utils";
 import {StatusCodes} from "http-status-codes";
 import {Response } from 'express';
 
@@ -13,7 +13,7 @@ export class DashboardStatisticController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await StatisticsRepository.getOne(req.params.id)
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

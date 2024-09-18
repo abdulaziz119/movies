@@ -2,6 +2,7 @@ import {MoviesModel, ValidatedRequest, ValidatedRequestParams, ValidatedRequestQ
 import {MoviesRepository} from "../../repository";
 import {Response } from 'express';
 import {ErrorService, getPaginationResponse, MovieService, ResponseHelper} from "../../utils";
+import {StatusCodes} from "http-status-codes";
 
 export class FrontendMoviesController {
 
@@ -26,7 +27,7 @@ export class FrontendMoviesController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await MovieService.frontendGetOne(req.params,req.headers['accept-language'] ?? 'uz')
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -49,7 +50,7 @@ export class FrontendMoviesController {
     static async genreGetAll(req:Request, res: Response) {
         try {
             const result = await MoviesRepository.frontendGenreGetAll()
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

@@ -6,17 +6,16 @@ import {
     ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
-import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
+import {ErrorService, ResponseHelper} from "../../utils";
 import {RolesRepository} from "../../repository";
-import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import {StatusCodes} from "http-status-codes";
 import { Response } from 'express';
 
 export class DashboardRoleController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<RolesModel>>, res: Response) {
         try {
             const result = await RolesRepository.create(req.body)
-            if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateRole)
-
+            if (!result) return ErrorService.error(res, {}, StatusCodes.NOT_FOUND, ErrorEnum.FailedToCreateRole)
 
             return ResponseHelper.success(res, result)
         } catch (error) {
@@ -27,7 +26,7 @@ export class DashboardRoleController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await RolesRepository.getOne(req.params)
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

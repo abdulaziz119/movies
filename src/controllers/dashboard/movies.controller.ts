@@ -1,8 +1,7 @@
-import {AdvertisingRepository, MoviesRepository} from "../../repository";
+import { MoviesRepository} from "../../repository";
 import {NOT_FOUND, StatusCodes} from "http-status-codes";
 import {Response } from 'express';
 import {
-    AdvertisingModule,
     ErrorEnum,
     MoviesModel,
     ValidatedRequest,
@@ -10,7 +9,7 @@ import {
     ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
-import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
+import {ErrorService, ResponseHelper} from "../../utils";
 
 export class DashboardMoviesController {
     static async create(req: ValidatedRequest<ValidatedRequestBody<MoviesModel>>, res: Response) {
@@ -18,7 +17,7 @@ export class DashboardMoviesController {
             const result: MoviesModel = await MoviesRepository.create(req.body)
             if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateMovies)
 
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.CREATED)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -27,7 +26,7 @@ export class DashboardMoviesController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await MoviesRepository.getOne(req.params,req.headers['accept-language'] ?? 'uz')
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -84,7 +83,7 @@ export class DashboardMoviesController {
     static async genreGetAll(req:Request, res:Response) {
         try {
             const result = await MoviesRepository.genreGetAll()
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

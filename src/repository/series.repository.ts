@@ -153,20 +153,25 @@ export class SeriesRepository {
         }
     }
 
-    static async update(params: SeriesModule): Promise<SeriesModule | null> {
+    static async update(params: SeriesModule): Promise<SeriesModule> {
+        const code = parseInt(params.code as unknown as string, 10);
+        if (isNaN(code)) {
+            throw new Error('Invalid code value');
+        }
+
         const sql = `
-        UPDATE public.series
-        SET name = $1,
-            movies = $2,
-            genre = $3,
-            seen = $4,
-            year = $5,
-            state = $6,
-            code = $7,
-            create_admin_id = $8,
-            updated_at = NOW()
-        WHERE id = $9
-        RETURNING id, name, movies, genre, seen, year, state, create_admin_id, created_at, updated_at, deleted_at;
+    UPDATE public.series
+    SET name = $1,
+        movies = $2,
+        genre = $3,
+        seen = $4,
+        year = $5,
+        state = $6,
+        code = $7,
+        create_admin_id = $8,
+        updated_at = NOW()
+    WHERE id = $9
+    RETURNING id, name, movies, genre, seen, year, state, code, create_admin_id, created_at, updated_at, deleted_at;
     `;
 
         try {
@@ -176,14 +181,14 @@ export class SeriesRepository {
                 params.genre,
                 params.seen,
                 params.year,
-                params.code,
                 params.state,
+                code,
                 params.create_admin_id,
                 params.id
             ]);
 
             if (!result.rows || result.rows.length === 0) {
-                return null;
+                return result.rows[0] as SeriesModule;
             }
 
             return result.rows[0] as SeriesModule;
@@ -192,6 +197,7 @@ export class SeriesRepository {
             throw new Error('Failed to update series');
         }
     }
+
 
 
     static async frontendGetAll(params: { limit: number, page: number },language:string): Promise<any[]> {

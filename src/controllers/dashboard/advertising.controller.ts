@@ -1,13 +1,12 @@
 import {
-    AdminModel,
     AdvertisingModule, ErrorEnum,
     ValidatedRequest,
     ValidatedRequestBody, ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
-import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
-import {AdminsRepository, AdvertisingRepository} from "../../repository";
-import {NOT_FOUND, StatusCodes} from "http-status-codes";
+import {ErrorService, ResponseHelper} from "../../utils";
+import { AdvertisingRepository} from "../../repository";
+import { StatusCodes} from "http-status-codes";
 import {Response } from 'express';
 
 
@@ -17,9 +16,9 @@ export class DashboardAdvertisingController {
         try {
             const result = await AdvertisingRepository.create(req.body)
 
-            if (!result) return ErrorService.error(res, {}, NOT_FOUND, ErrorEnum.FailedToCreateAd)
+            if (!result) return ErrorService.error(res, {}, StatusCodes.NOT_FOUND, ErrorEnum.FailedToCreateAd)
 
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.CREATED)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -45,7 +44,7 @@ export class DashboardAdvertisingController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await AdvertisingRepository.getOne(req.params)
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

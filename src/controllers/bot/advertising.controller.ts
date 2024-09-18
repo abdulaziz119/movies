@@ -2,6 +2,7 @@ import {Response } from 'express';
 import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
 import {AdvertisingModule, ValidatedRequest, ValidatedRequestParams, ValidatedRequestQuery} from "../../models";
 import {AdvertisingRepository} from "../../repository";
+import {StatusCodes} from "http-status-codes";
 
 export class BotAdvertisingController {
 
@@ -27,7 +28,7 @@ export class BotAdvertisingController {
         try {
             const result = await AdvertisingRepository.frontedGetOne(req.params)
             await  AdvertisingRepository.incrementSeenIfNot(result.id)
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

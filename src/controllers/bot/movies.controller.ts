@@ -2,6 +2,7 @@ import {MoviesModel, ValidatedRequest, ValidatedRequestParams, ValidatedRequestQ
 import {MoviesRepository, StatisticsRepository} from "../../repository";
 import {Response } from 'express';
 import {ErrorService, getPaginationResponse, MovieService, ResponseHelper, StatisticsService} from "../../utils";
+import {StatusCodes} from "http-status-codes";
 
 export class BotMoviesController {
 
@@ -27,7 +28,7 @@ export class BotMoviesController {
         try {
             const result = await MoviesRepository.frontendGetOne(req.params,req.headers['accept-language'] ?? 'uz')
             await StatisticsService.incrementWatchedCount({type: 'bot'})
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -54,7 +55,7 @@ export class BotMoviesController {
     static async genreGetAll(req:Request, res: Response) {
         try {
             const result = await MoviesRepository.frontendGenreGetAll()
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

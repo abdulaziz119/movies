@@ -5,7 +5,7 @@ import {
     ValidatedRequestParams,
     ValidatedRequestQuery
 } from "../../models";
-import {AdminsService, ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
+import {AdminsService, ErrorService, ResponseHelper} from "../../utils";
 import {AdminsRepository} from "../../repository";
 import {StatusCodes} from "http-status-codes";
 import {Response } from 'express';
@@ -15,7 +15,7 @@ export class DashboardAdminController {
         try {
             const result = await AdminsService.create(req.body)
 
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.CREATED)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -27,7 +27,7 @@ export class DashboardAdminController {
 
             if (!result) return ErrorService.error(res, {}, StatusCodes.UNAUTHORIZED, ErrorEnum.NotFoundLogin)
 
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }
@@ -36,7 +36,7 @@ export class DashboardAdminController {
     static async getOne(req: ValidatedRequest<ValidatedRequestParams<{id: number}>>, res: Response) {
         try {
             const result = await AdminsRepository.getOne(req.params)
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }

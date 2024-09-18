@@ -6,7 +6,8 @@ import {
 } from "../../models";
 import {AdvertisingRepository} from "../../repository";
 import {Response } from 'express';
-import {ErrorService, getPaginationResponse, ResponseHelper} from "../../utils";
+import {ErrorService, ResponseHelper} from "../../utils";
+import {StatusCodes} from "http-status-codes";
 
 export class FrontendAdvertisingController {
 
@@ -33,7 +34,7 @@ export class FrontendAdvertisingController {
         try {
             const result = await AdvertisingRepository.frontedGetOne(req.params)
             await  AdvertisingRepository.incrementSeenIfNot(result.id)
-            return ResponseHelper.success(res, result)
+            return ResponseHelper.success(res, result,StatusCodes.OK)
         } catch (error) {
             return ErrorService.error(res, error)
         }
