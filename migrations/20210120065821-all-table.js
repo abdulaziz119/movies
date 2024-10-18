@@ -102,6 +102,15 @@ exports.up = function (db, callback) {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             deleted_at TIMESTAMP DEFAULT NULL
         );
+          -- Create uploads table
+        CREATE TABLE IF NOT EXISTS public.uploads
+        (
+            id SERIAL PRIMARY KEY UNIQUE,
+            url VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP DEFAULT NULL
+        );
     `, function (err) {
         if (err) return callback(err);
         callback();
@@ -118,6 +127,7 @@ exports.down = function (db, callback) {
         DROP TABLE IF EXISTS public.admin;
         DROP TABLE IF EXISTS public.roles;
         DROP TABLE IF EXISTS public.statistics;
+        DROP TABLE IF EXISTS public.uploads;
     `, function (err) {
         if (err) return callback(err);
         callback();

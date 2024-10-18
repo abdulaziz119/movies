@@ -73,6 +73,10 @@ export class DashboardMoviesController {
 
     static async delete(req: ValidatedRequest<ValidatedRequestParams<{ id: number }>>, res: Response) {
         try {
+            const result = await MoviesRepository.getOne(req.params,req.headers['accept-language'] ?? 'uz')
+            if (!result) {
+                return ErrorService.error(res, ErrorEnum.NotFound, 404)
+            }
             await MoviesRepository.delete(req.params.id)
             return ResponseHelper.success(res, null, StatusCodes.NO_CONTENT)
         } catch (error) {

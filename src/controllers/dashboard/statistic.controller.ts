@@ -1,4 +1,5 @@
 import {
+    ErrorEnum,
     StatisticsModel,
     ValidatedRequest,
     ValidatedRequestParams,
@@ -39,6 +40,12 @@ export class DashboardStatisticController {
 
     static async delete(req: ValidatedRequest<ValidatedRequestParams<{ id: number }>>, res: Response) {
         try {
+            const result = await StatisticsRepository.getOne(req.params.id)
+
+            if (!result) {
+                return ErrorService.error(res, ErrorEnum.NotFound, 404)
+            }
+
             await StatisticsRepository.delete(req.params.id)
             return ResponseHelper.success(res, null, StatusCodes.NO_CONTENT)
         } catch (error) {
